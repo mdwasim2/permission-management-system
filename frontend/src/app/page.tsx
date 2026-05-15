@@ -1,5 +1,5 @@
-import React from "react";
+import { AuthHome } from "@/components/auth/auth-home";
 
-export default function page() {
-  return <div>page</div>;
+export default function Page() {
+  return <AuthHome />;
 }

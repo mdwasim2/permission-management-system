@@ -88,6 +88,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
       const response = await fetch(`${apiBaseUrl}/auth/${mode}`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -108,9 +109,8 @@ export function AuthForm({ mode }: AuthFormProps) {
 
       setSuccessData(result as AuthResult);
 
-      if (mode === "register") {
-        setPassword("");
-      }
+      // A full navigation ensures the new auth cookies are visible to middleware immediately.
+      window.location.assign("/");
     } catch {
       setErrorMessage("Unable to reach the backend API right now");
     } finally {
@@ -119,53 +119,31 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-5 py-8 sm:px-8 sm:py-10">
-      <div className="pointer-events-none absolute left-1/2 top-[38%] h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(255,142,97,0.14)_0%,_rgba(255,255,255,0)_68%)] blur-3xl" />
+    <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-5 py-8 sm:px-7 sm:py-10">
+      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(255,151,107,0.16)_0%,_rgba(255,255,255,0)_68%)] blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,146,104,0.08),_transparent_28%)]" />
       <div className="relative flex min-h-[calc(100vh-4rem)] flex-col">
         <header className="flex items-start justify-start">
           <ObliqLogo />
         </header>
 
-        <div className="flex flex-1 items-center justify-center py-10 sm:py-14">
-          <section className="w-full max-w-[27rem] rounded-[2rem] border border-white/80 bg-white px-6 py-8 shadow-[0_28px_90px_rgba(198,181,169,0.26)] ring-1 ring-[#f4efeb] sm:px-10 sm:py-11">
+        <div className="flex flex-1 items-center justify-center py-10 sm:py-16">
+          <section className="w-full max-w-[27.25rem] rounded-[2rem] border border-[#f6efea] bg-white px-6 py-8 shadow-[0_18px_40px_rgba(223,214,208,0.26),0_45px_90px_rgba(239,233,228,0.6)] ring-8 ring-white/50 sm:px-10 sm:py-12">
             <div className="text-center">
-              <h1 className="text-[2.1rem] font-semibold tracking-[-0.04em] text-[#202631] sm:text-[2.3rem]">
-                {mode === "login" ? "Login" : "Create account"}
+              <h1 className="text-[2rem] font-semibold tracking-[-0.05em] text-[#202631] sm:text-[2.15rem]">
+                {mode === "login" ? "Login" : "Register"}
               </h1>
-              <p className="mt-2 text-base text-[#98a1b2] sm:text-[1.05rem]">
+              <p className="mt-2 text-[1.02rem] text-[#a0a8b8]">
                 {mode === "login"
                   ? "Enter your details to continue"
-                  : "Set up your customer account"}
+                  : "Create your account to continue"}
               </p>
             </div>
 
-            <div className="mt-8 grid grid-cols-2 rounded-2xl bg-[#fff2ec] p-1">
-              <Link
-                href="/login"
-                className={`rounded-[1rem] px-4 py-2.5 text-center text-sm font-medium transition ${
-                  mode === "login"
-                    ? "bg-white text-[#202631] shadow-sm"
-                    : "text-[#a56c58]"
-                }`}
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                className={`rounded-[1rem] px-4 py-2.5 text-center text-sm font-medium transition ${
-                  mode === "register"
-                    ? "bg-white text-[#202631] shadow-sm"
-                    : "text-[#a56c58]"
-                }`}
-              >
-                Sign up
-              </Link>
-            </div>
-
-            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            <form onSubmit={handleSubmit} className="mt-12 space-y-5">
               {mode === "register" ? (
                 <label className="block">
-                  <span className="mb-2.5 block text-[1.02rem] font-medium text-[#3f4b5f]">
+                  <span className="mb-2.5 block text-[1.05rem] font-medium text-[#414d61]">
                     Full name
                   </span>
                   <input
@@ -173,13 +151,13 @@ export function AuthForm({ mode }: AuthFormProps) {
                     onChange={(event) => setName(event.target.value)}
                     type="text"
                     placeholder="John Doe"
-                    className="h-13 w-full rounded-2xl border border-[#e6e9ee] bg-white px-4 text-[1.02rem] text-[#202631] outline-none transition placeholder:text-[#b0b7c3] focus:border-[#ff6b3d] focus:ring-4 focus:ring-[#ffe0d5]"
+                    className="h-[3.45rem] w-full rounded-[1.05rem] border border-[#e8ebf0] bg-white px-4 text-[1rem] text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-4 focus:ring-[#ffe5da]"
                   />
                 </label>
               ) : null}
 
               <label className="block">
-                <span className="mb-2.5 block text-[1.02rem] font-medium text-[#3f4b5f]">
+                <span className="mb-2.5 block text-[1.05rem] font-medium text-[#414d61]">
                   Email
                 </span>
                 <input
@@ -187,56 +165,58 @@ export function AuthForm({ mode }: AuthFormProps) {
                   onChange={(event) => setEmail(event.target.value)}
                   type="email"
                   placeholder="example@email.com"
-                  className="h-13 w-full rounded-2xl border border-[#e6e9ee] bg-white px-4 text-[1.02rem] text-[#202631] outline-none transition placeholder:text-[#b0b7c3] focus:border-[#ff6b3d] focus:ring-4 focus:ring-[#ffe0d5]"
+                  className="h-[3.45rem] w-full rounded-[1.05rem] border border-[#e8ebf0] bg-white px-4 text-[1rem] text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-4 focus:ring-[#ffe5da]"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-2.5 block text-[1.02rem] font-medium text-[#3f4b5f]">
+                <span className="mb-2.5 block text-[1.05rem] font-medium text-[#414d61]">
                   Password
                 </span>
-                <div className="flex h-13 items-center rounded-2xl border border-[#e6e9ee] bg-white pr-4 transition focus-within:border-[#ff6b3d] focus-within:ring-4 focus-within:ring-[#ffe0d5]">
+                <div className="flex h-[3.45rem] items-center rounded-[1.05rem] border border-[#e8ebf0] bg-white pr-4 transition focus-within:border-[#ff6b3d] focus-within:ring-4 focus-within:ring-[#ffe5da]">
                   <input
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="h-full flex-1 rounded-2xl bg-transparent px-4 text-[1.02rem] text-[#202631] outline-none placeholder:text-[#b0b7c3]"
+                    className="h-full flex-1 rounded-[1.05rem] bg-transparent px-4 text-[1rem] text-[#202631] outline-none placeholder:text-[#b1b8c4]"
                   />
                   <button
                     type="button"
                     aria-label="Toggle password visibility"
                     onClick={() => setShowPassword((current) => !current)}
-                    className="text-[#c5cbd6] transition hover:text-[#98a1b2]"
+                    className="text-[#d0d5dd] transition hover:text-[#9ca4b3]"
                   >
                     <EyeIcon />
                   </button>
                 </div>
               </label>
 
-              <div className="flex flex-col gap-3 text-[0.98rem] text-[#7f8796] sm:flex-row sm:items-center sm:justify-between">
-                <label className="inline-flex items-center gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(event) => setRememberMe(event.target.checked)}
-                    className="h-4 w-4 rounded-[0.35rem] border border-[#dde2ea] text-[#ff6b3d] accent-[#ff6b3d]"
-                  />
-                  <span>Remember me</span>
-                </label>
-                {mode === "login" ? (
+              {mode === "login" ? (
+                <div className="flex flex-col gap-3 text-[0.98rem] text-[#7f8796] sm:flex-row sm:items-center sm:justify-between">
+                  <label className="inline-flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(event) => setRememberMe(event.target.checked)}
+                      className="h-4 w-4 rounded-[0.35rem] border border-[#dde2ea] text-[#ff6b3d] accent-[#ff6b3d]"
+                    />
+                    <span>Remember me</span>
+                  </label>
                   <button
                     type="button"
                     className="text-left font-medium text-[#ff6b3d] transition hover:text-[#f15c2f] sm:text-right"
                   >
                     Forgot password?
                   </button>
-                ) : (
-                  <span className="text-left sm:text-right">
-                    Default role: Customer
-                  </span>
-                )}
-              </div>
+                </div>
+              ) : (
+                <p className="text-[0.98rem] text-[#7f8796]">
+                  New accounts are created with the{" "}
+                  <span className="font-medium text-[#414d61]">Customer</span>{" "}
+                  role.
+                </p>
+              )}
 
               {errorMessage ? (
                 <p className="rounded-2xl bg-[#fff0ea] px-4 py-3 text-sm text-[#c94f2d]">
@@ -257,7 +237,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-2 h-13 w-full rounded-2xl bg-[linear-gradient(180deg,#ff7e52_0%,#ff6235_100%)] text-[1.02rem] font-medium text-white shadow-[0_16px_28px_rgba(255,107,61,0.34)] transition hover:brightness-[1.02] disabled:cursor-not-allowed disabled:opacity-70"
+                className="mt-3 h-[3.45rem] w-full rounded-[1rem] border border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-[1.02rem] font-medium text-white shadow-[0_10px_28px_rgba(255,109,64,0.32)] transition hover:brightness-[1.02] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? "Please wait..." : submitLabel}
               </button>
