@@ -9,6 +9,7 @@ import { hash, compare } from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
+import { permissionCatalog } from '../permissions/permission-catalog';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -16,6 +17,40 @@ const ACCESS_TOKEN_COOKIE = 'access_token';
 const REFRESH_TOKEN_COOKIE = 'refresh_token';
 const ACCESS_TOKEN_TTL_SECONDS = 60 * 15;
 const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+const rolePermissionDefaults: Record<RoleKey, string[]> = {
+  [RoleKey.ADMIN]: Object.values(permissionCatalog).flat(),
+  [RoleKey.MANAGER]: [
+    ...permissionCatalog.dashboard,
+    ...permissionCatalog.users,
+    ...permissionCatalog.leads,
+    ...permissionCatalog.tasks,
+    ...permissionCatalog.reports,
+    ...permissionCatalog.audit,
+    ...permissionCatalog.customerPortal,
+  ],
+  [RoleKey.AGENT]: [
+    ...permissionCatalog.dashboard,
+    ...permissionCatalog.leads,
+    ...permissionCatalog.tasks,
+    ...permissionCatalog.customerPortal,
+  ],
+  [RoleKey.CUSTOMER]: [
+    ...permissionCatalog.dashboard,
+    ...permissionCatalog.customerPortal,
+  ],
+};
+
+const navigationItems = [
+  { label: 'Dashboard', href: '/dashboard', permission: 'dashboard.view', group: 'Workspace' },
+  { label: 'Users', href: '/users', permission: 'users.view', group: 'Workspace' },
+  { label: 'Leads', href: '/leads', permission: 'leads.view', group: 'Workspace' },
+  { label: 'Tasks', href: '/tasks', permission: 'tasks.view', group: 'Workspace' },
+  { label: 'Reports', href: '/reports', permission: 'reports.view', group: 'Workspace' },
+  { label: 'Audit Log', href: '/audit-log', permission: 'audit.view', group: 'Workspace' },
+  { label: 'Customer Portal', href: '/customer-portal', permission: 'customer-portal.view', group: 'Users' },
+  { label: 'Settings', href: '/settings', permission: 'settings.manage', group: 'Other' },
+] as const;
 
 @Injectable()
 export class AuthService {
@@ -166,6 +201,8 @@ export class AuthService {
       throw new UnauthorizedException('User is not active');
     }
 
+    const permissions = await this.resolvePermissions(user.id, user.role.key);
+
     return {
       user: {
         id: user.id,
@@ -173,6 +210,8 @@ export class AuthService {
         email: user.email,
         status: user.status,
         role: user.role,
+        permissions,
+        navigation: this.buildNavigation(permissions),
       },
     };
   }
@@ -213,6 +252,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role.key,
+      permissions: await this.resolvePermissions(user.id, user.role.key),
     });
 
     // The refresh token is persisted server-side as a hash and can mint a new access token.
@@ -224,10 +264,10 @@ export class AuthService {
       {
         secret: process.env.JWT_REFRESH_SECRET ?? 'dev-refresh-secret',
         expiresIn: `${REFRESH_TOKEN_TTL_SECONDS}s`,
-    // Keep a single active refresh token per user for this starter auth flow.
       },
     );
 
+    // Keep a single active refresh token per user for this starter auth flow.
     await this.prisma.refreshToken.deleteMany({
       where: { userId: user.id },
     });
@@ -251,6 +291,10 @@ export class AuthService {
         email: user.email,
         status: user.status,
         role: user.role,
+        permissions: await this.resolvePermissions(user.id, user.role.key),
+        navigation: this.buildNavigation(
+          await this.resolvePermissions(user.id, user.role.key),
+        ),
       },
     };
   }
@@ -299,12 +343,40 @@ export class AuthService {
 
   private verifyAccessToken(token: string) {
     try {
-      return this.jwtService.verify<{ sub: string; email: string; role: RoleKey }>(
+      return this.jwtService.verify<{
+        sub: string;
+        email: string;
+        role: RoleKey;
+        permissions: string[];
+      }>(
         token,
       );
     } catch {
       throw new UnauthorizedException('Access token is invalid');
     }
+  }
+
+  private async resolvePermissions(userId: string, roleKey: RoleKey) {
+    const basePermissions = new Set(rolePermissionDefaults[roleKey] ?? []);
+    const overrides = await this.prisma.userPermission.findMany({
+      where: { userId },
+      include: { permission: true },
+    });
+
+    for (const override of overrides) {
+      if (override.allowed) {
+        basePermissions.add(override.permission.key);
+        continue;
+      }
+
+      basePermissions.delete(override.permission.key);
+    }
+
+    return [...basePermissions].sort((left, right) => left.localeCompare(right));
+  }
+
+  private buildNavigation(permissions: string[]) {
+    return navigationItems.filter((item) => permissions.includes(item.permission));
   }
 
   private verifyRefreshToken(token: string) {
