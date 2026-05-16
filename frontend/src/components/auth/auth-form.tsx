@@ -122,7 +122,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-4 py-6 sm:px-5 sm:py-8 md:px-7 md:py-10">
-      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[24rem] w-[24rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(255,151,107,0.16)_0%,_rgba(255,255,255,0)_68%)] blur-3xl sm:h-[36rem] sm:w-[36rem]" />
+      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[24rem] w-[24rem] -translate-x-1/2 rounded-full " />
       <div className="pointer-events-none absolute " />
       <div className="relative flex min-h-[calc(100vh-3rem)] flex-col sm:min-h-[calc(100vh-4rem)]">
         <header className="flex items-start justify-start">
@@ -130,7 +130,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         </header>
 
         <div className="flex flex-1 items-center justify-center py-6 sm:py-10 md:py-16">
-          <section className="w-full max-w-sm rounded-2xl bg-white px-5 py-6 ring-0 sm:max-w-[27.25rem] sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A,0_62px_62px_#C2C2C217,0_140px_84px_#C2C2C20D,0_249px_100px_#C2C2C203,0_389px_109px_#C2C2C200]">
+          <section className="w-full max-w-sm rounded-2xl bg-white px-5 py-6 ring-0 sm:max-w-[27.25rem] sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A]">
             <div className="text-center">
               <h1 className="font-onest font-semibold text-2xl leading-8 tracking-[-2%] text-[#202631] align-middle">
                 {mode === "login" ? "Login" : "Register"}
