@@ -24,15 +24,15 @@ const EyeIcon = () => (
 );
 
 const ObliqLogo = () => (
-  <div className="flex items-center gap-3">
-    <div className="grid h-10 w-10 place-items-center rounded-xl bg-[linear-gradient(180deg,#ff9f72_0%,#ff6b3d_100%)] shadow-[0_12px_24px_rgba(255,107,61,0.28)]">
-      <div className="relative h-5 w-5">
-        <span className="absolute left-0 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full bg-white/85" />
-        <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full bg-white/55" />
-        <span className="absolute bottom-0 right-1 h-2.5 w-2.5 rounded-full bg-white" />
+  <div className="flex items-center gap-2 sm:gap-3">
+    <div className="grid h-8 w-8 place-items-center rounded-lg bg-[linear-gradient(180deg,#ff9f72_0%,#ff6b3d_100%)] shadow-[0_8px_16px_rgba(255,107,61,0.24)] sm:h-10 sm:w-10 sm:rounded-xl sm:shadow-[0_12px_24px_rgba(255,107,61,0.28)]">
+      <div className="relative h-4 w-4 sm:h-5 sm:w-5">
+        <span className="absolute left-0 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-white/85 sm:h-3.5 sm:w-3.5" />
+        <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-white/55 sm:h-3.5 sm:w-3.5" />
+        <span className="absolute bottom-0 right-1 h-2 w-2 rounded-full bg-white sm:h-2.5 sm:w-2.5" />
       </div>
     </div>
-    <span className="text-[2rem] font-bold tracking-[-0.04em] text-[#2d1d18]">
+    <span className="text-lg font-bold tracking-[-0.04em] text-[#2d1d18] sm:text-2xl">
       Obliq
     </span>
   </div>
@@ -120,31 +120,31 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-5 py-8 sm:px-7 sm:py-10">
-      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(255,151,107,0.16)_0%,_rgba(255,255,255,0)_68%)] blur-3xl" />
+    <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-4 py-6 sm:px-5 sm:py-8 md:px-7 md:py-10">
+      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[24rem] w-[24rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(255,151,107,0.16)_0%,_rgba(255,255,255,0)_68%)] blur-3xl sm:h-[36rem] sm:w-[36rem]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,146,104,0.08),_transparent_28%)]" />
-      <div className="relative flex min-h-[calc(100vh-4rem)] flex-col">
+      <div className="relative flex min-h-[calc(100vh-3rem)] flex-col sm:min-h-[calc(100vh-4rem)]">
         <header className="flex items-start justify-start">
           <ObliqLogo />
         </header>
 
-        <div className="flex flex-1 items-center justify-center py-10 sm:py-16">
-          <section className="w-full max-w-[27.25rem] rounded-[2rem] border border-[#f6efea] bg-white px-6 py-8 shadow-[0_18px_40px_rgba(223,214,208,0.26),0_45px_90px_rgba(239,233,228,0.6)] ring-8 ring-white/50 sm:px-10 sm:py-12">
+        <div className="flex flex-1 items-center justify-center py-6 sm:py-10 md:py-16">
+          <section className="w-full max-w-sm rounded-2xl border border-[#f6efea] bg-white px-5 py-6 shadow-[0_12px_24px_rgba(223,214,208,0.18),0_28px_56px_rgba(239,233,228,0.35)] ring-0 sm:max-w-[27.25rem] sm:rounded-[2rem] sm:px-6 sm:py-8 sm:ring-8 sm:ring-white/50 md:px-10 md:py-12">
             <div className="text-center">
-              <h1 className="text-[2rem] font-semibold tracking-[-0.05em] text-[#202631] sm:text-[2.15rem]">
+              <h1 className="text-xl font-semibold tracking-[-0.03em] text-[#202631] sm:text-[1.75rem] md:text-[2rem]">
                 {mode === "login" ? "Login" : "Register"}
               </h1>
-              <p className="mt-2 text-[1.02rem] text-[#a0a8b8]">
+              <p className="mt-1.5 text-xs text-[#a0a8b8] sm:mt-2 sm:text-[0.95rem] md:text-[1.02rem]">
                 {mode === "login"
                   ? "Enter your details to continue"
                   : "Create your account to continue"}
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-12 space-y-5">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-3.5 sm:mt-10 sm:space-y-5">
               {mode === "register" ? (
                 <label className="block">
-                  <span className="mb-2.5 block text-[1.05rem] font-medium text-[#414d61]">
+                  <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2.5 sm:text-[0.9rem] md:text-[1.05rem]">
                     Full name
                   </span>
                   <input
@@ -152,13 +152,13 @@ export function AuthForm({ mode }: AuthFormProps) {
                     onChange={(event) => setName(event.target.value)}
                     type="text"
                     placeholder="John Doe"
-                    className="h-[3.45rem] w-full rounded-[1.05rem] border border-[#e8ebf0] bg-white px-4 text-[1rem] text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-4 focus:ring-[#ffe5da]"
+                    className="h-10 w-full rounded-lg border border-[#e8ebf0] bg-white px-3 text-xs text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-3 focus:ring-[#ffe5da] sm:h-[3.45rem] sm:rounded-[1.05rem] sm:px-4 sm:text-[1rem] sm:focus:ring-4"
                   />
                 </label>
               ) : null}
 
               <label className="block">
-                <span className="mb-2.5 block text-[1.05rem] font-medium text-[#414d61]">
+                <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2.5 sm:text-[0.9rem] md:text-[1.05rem]">
                   Email
                 </span>
                 <input
@@ -166,21 +166,21 @@ export function AuthForm({ mode }: AuthFormProps) {
                   onChange={(event) => setEmail(event.target.value)}
                   type="email"
                   placeholder="example@email.com"
-                  className="h-[3.45rem] w-full rounded-[1.05rem] border border-[#e8ebf0] bg-white px-4 text-[1rem] text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-4 focus:ring-[#ffe5da]"
+                  className="h-10 w-full rounded-lg border border-[#e8ebf0] bg-white px-3 text-xs text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-3 focus:ring-[#ffe5da] sm:h-[3.45rem] sm:rounded-[1.05rem] sm:px-4 sm:text-[1rem] sm:focus:ring-4"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-2.5 block text-[1.05rem] font-medium text-[#414d61]">
+                <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2.5 sm:text-[0.9rem] md:text-[1.05rem]">
                   Password
                 </span>
-                <div className="flex h-[3.45rem] items-center rounded-[1.05rem] border border-[#e8ebf0] bg-white pr-4 transition focus-within:border-[#ff6b3d] focus-within:ring-4 focus-within:ring-[#ffe5da]">
+                <div className="flex h-10 items-center rounded-lg border border-[#e8ebf0] bg-white pr-3 transition focus-within:border-[#ff6b3d] focus-within:ring-3 focus-within:ring-[#ffe5da] sm:h-[3.45rem] sm:rounded-[1.05rem] sm:pr-4 sm:focus-within:ring-4">
                   <input
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="h-full flex-1 rounded-[1.05rem] bg-transparent px-4 text-[1rem] text-[#202631] outline-none placeholder:text-[#b1b8c4]"
+                    className="h-full flex-1 rounded-lg bg-transparent px-3 text-xs text-[#202631] outline-none placeholder:text-[#b1b8c4] sm:rounded-[1.05rem] sm:px-4 sm:text-[1rem]"
                   />
                   <button
                     type="button"
@@ -194,7 +194,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               </label>
 
               {mode === "login" ? (
-                <div className="flex flex-col gap-3 text-[0.98rem] text-[#7f8796] sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2.5 text-[0.8rem] text-[#7f8796] sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:text-[0.98rem]">
                   <Checkbox
                     checked={rememberMe}
                     onChange={setRememberMe}
@@ -208,7 +208,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                   </button>
                 </div>
               ) : (
-                <p className="text-[0.98rem] text-[#7f8796]">
+                <p className="text-[0.8rem] text-[#7f8796] sm:text-[0.98rem]">
                   New accounts are created with the{" "}
                   <span className="font-medium text-[#414d61]">Customer</span>{" "}
                   role.
@@ -216,15 +216,15 @@ export function AuthForm({ mode }: AuthFormProps) {
               )}
 
               {errorMessage ? (
-                <p className="rounded-2xl bg-[#fff0ea] px-4 py-3 text-sm text-[#c94f2d]">
+                <p className="rounded-lg bg-[#fff0ea] px-3 py-2.5 text-xs text-[#c94f2d] sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
                   {errorMessage}
                 </p>
               ) : null}
 
               {successData ? (
-                <div className="rounded-2xl bg-[#eefaf2] px-4 py-3 text-sm text-[#22543d]">
+                <div className="rounded-lg bg-[#eefaf2] px-3 py-2.5 text-xs text-[#22543d] sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
                   <p className="font-semibold">{successData.message}</p>
-                  <p className="mt-1">
+                  <p className="mt-0.5 sm:mt-1">
                     Signed in as {successData.user.name} (
                     {successData.user.role.label})
                   </p>
@@ -234,16 +234,14 @@ export function AuthForm({ mode }: AuthFormProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-3 h-[3.45rem] w-full rounded-[1rem] border border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-[1.02rem] font-medium text-white shadow-[0_10px_28px_rgba(255,109,64,0.32)] transition hover:brightness-[1.02] disabled:cursor-not-allowed disabled:opacity-70"
+                className="mt-2 h-10 w-full rounded-lg border border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-xs font-medium text-white shadow-[0_8px_16px_rgba(255,109,64,0.24)] transition hover:brightness-[1.02] disabled:cursor-not-allowed disabled:opacity-70 sm:mt-3 sm:h-[3.45rem] sm:rounded-[1rem] sm:text-[1.02rem] sm:shadow-[0_10px_28px_rgba(255,109,64,0.32)]"
               >
                 {isSubmitting ? "Please wait..." : submitLabel}
               </button>
             </form>
 
-            <p className="mt-12 text-center text-[1rem] text-[#7f8796]">
-              {mode === "login"
-                ? "Don’t have an account? "
-                : "Already have an account? "}
+            <p className="mt-6 text-center text-[0.8rem] text-[#7f8796] sm:mt-10 sm:text-[0.95rem]">
+              {mode === "login" ? "Don't have an account? " : "Already have an account? "}
               <Link
                 href={mode === "login" ? "/register" : "/login"}
                 className="font-semibold text-[#202631] transition hover:text-[#ff6b3d]"
