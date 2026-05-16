@@ -156,11 +156,11 @@ function MetricCard({
   value: string | number;
 }) {
   return (
-    <div className="rounded-[1.4rem] border border-[#ece7e2] bg-white/90 p-5 shadow-[0_12px_34px_rgba(236,231,226,0.35)]">
+    <div className="rounded-[1rem] sm:rounded-[1.2rem] md:rounded-[1.4rem] border border-[#ece7e2] bg-white/90 p-3 sm:p-4 md:p-5 shadow-[0_12px_34px_rgba(236,231,226,0.35)]">
       <p className="text-xs uppercase tracking-[0.18em] text-[#9ca3b4]">
         {label}
       </p>
-      <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[#353c50]">
+      <p className="mt-2 sm:mt-3 text-xl sm:text-2xl font-semibold tracking-[-0.04em] text-[#353c50]">
         {value}
       </p>
     </div>
@@ -194,12 +194,16 @@ function PanelShell({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[1.8rem] border border-[#ece7e2] bg-white/88 p-5 shadow-[0_18px_50px_rgba(236,231,226,0.45)]">
+    <section className="rounded-[1.1rem] sm:rounded-[1.4rem] md:rounded-[1.8rem] border border-[#ece7e2] bg-white/88 p-3 sm:p-4 md:p-5 shadow-[0_18px_50px_rgba(236,231,226,0.45)]">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-[#353c50]">{title}</h2>
+          <h2 className="text-base sm:text-lg font-semibold text-[#353c50]">
+            {title}
+          </h2>
           {description ? (
-            <p className="mt-1 text-sm text-[#8b93a6]">{description}</p>
+            <p className="mt-1 text-xs sm:text-sm text-[#8b93a6]">
+              {description}
+            </p>
           ) : null}
         </div>
       </div>
@@ -346,8 +350,8 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
       case "Tasks":
         return (
           <PanelShell title="Tasks" description="Task list in current scope.">
-            <div className="overflow-hidden rounded-[1.4rem] border border-[#ece7e2] bg-[#fffdfa]">
-              <table className="w-full border-collapse text-left text-sm text-[#5b6275]">
+            <div className="overflow-x-auto rounded-[1.1rem] sm:rounded-[1.4rem] border border-[#ece7e2] bg-[#fffdfa]">
+              <table className="w-full min-w-[640px] border-collapse text-left text-sm text-[#5b6275]">
                 <thead>
                   <tr className="border-b border-[#f2eeea] text-xs uppercase tracking-[0.12em] text-[#a2a8b8]">
                     <th className="px-4 py-3 font-medium">Title</th>
@@ -500,11 +504,11 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#fff7f1_0%,#fffaf6_14%,#fdfdfd_100%)] px-3 py-3 text-[#2d3348] sm:px-4 sm:py-4">
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(255,250,246,0.88)_100%)] shadow-[0_24px_80px_rgba(222,196,176,0.34)]">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#fff7f1_0%,#fffaf6_14%,#fdfdfd_100%)] px-2 py-2 text-[#2d3348] sm:px-3 sm:py-3 md:px-4 md:py-4">
+      <div className="relative overflow-hidden rounded-[1rem] sm:rounded-[1.4rem] md:rounded-[2rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(255,250,246,0.88)_100%)] shadow-[0_24px_80px_rgba(222,196,176,0.34)]">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(252,186,159,0.25),rgba(255,255,255,0))]" />
         <div className="flex min-h-screen flex-col xl:flex-row">
-          <aside className="border-b border-[#f2e7dd] bg-[linear-gradient(180deg,#fde7dc_0%,#fff3e3_100%)] px-5 py-6 xl:min-h-screen xl:w-[250px] xl:border-b-0 xl:border-r">
+          <aside className="border-b border-[#f2e7dd] bg-[linear-gradient(180deg,#fde7dc_0%,#fff3e3_100%)] px-3 py-4 sm:px-4 sm:py-5 xl:min-h-screen xl:w-[250px] xl:border-b-0 xl:border-r">
             <div className="rounded-2xl border border-white/70 bg-white px-4 py-3 shadow-[0_16px_36px_rgba(226,190,160,0.22)]">
               <div className="flex items-center gap-3">
                 <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[linear-gradient(180deg,#6d75ff_0%,#5963f4_100%)] text-white shadow-[0_10px_24px_rgba(94,101,247,0.28)]">
@@ -521,11 +525,11 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
               </div>
             </div>
 
-            <div className="mt-6 space-y-6">
+            <div className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
               {navigationGroups.length ? (
                 navigationGroups.map((group) => (
                   <div key={group.title}>
-                    <p className="mb-3 px-2 text-xs font-medium uppercase tracking-[0.2em] text-[#b1917e]">
+                    <p className="mb-2 sm:mb-3 px-2 text-[11px] sm:text-xs font-medium uppercase tracking-[0.2em] text-[#b1917e]">
                       {group.title}
                     </p>
                     <div className="space-y-1.5">
@@ -540,7 +544,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
                               setActiveSidebarItem(item.label);
                               router.push(item.href);
                             }}
-                            className={`flex w-full items-center justify-between rounded-2xl px-3 py-2.5 text-left text-sm transition ${
+                            className={`flex w-full items-center justify-between rounded-xl sm:rounded-2xl px-3 py-2 text-left text-xs sm:text-sm transition ${
                               isActive
                                 ? "bg-[#e9d5c3]/65 font-medium text-[#4f5567]"
                                 : "text-[#6b7184] hover:bg-white/60"
@@ -561,30 +565,30 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
             </div>
           </aside>
 
-          <section className="flex-1 px-4 py-4 sm:px-6 sm:py-5 lg:px-7 xl:px-8">
-            <header className="rounded-[1.8rem] border border-white/80 bg-white/80 px-4 py-3 shadow-[0_10px_24px_rgba(236,231,226,0.8)] backdrop-blur sm:px-5">
+          <section className="flex-1 px-2 py-2 sm:px-4 sm:py-4 md:px-6 md:py-5 lg:px-7 xl:px-8">
+            <header className="rounded-[1rem] sm:rounded-[1.4rem] md:rounded-[1.8rem] border border-white/80 bg-white/80 px-3 py-3 sm:px-4 md:px-5 shadow-[0_10px_24px_rgba(236,231,226,0.8)] backdrop-blur">
               <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => router.back()}
-                    className="grid h-11 w-11 place-items-center rounded-full border border-[#ebe7e3] bg-white text-[#656b7b] shadow-sm"
+                    className="grid h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11 place-items-center rounded-full border border-[#ebe7e3] bg-white text-[#656b7b] shadow-sm"
                   >
                     <span className="text-lg">←</span>
                   </button>
                   <div>
-                    <p className="text-[1.35rem] font-semibold tracking-[-0.03em] text-[#31384c]">
+                    <p className="text-lg sm:text-xl md:text-[1.35rem] font-semibold tracking-[-0.03em] text-[#31384c]">
                       {activeSidebarItem}
                     </p>
-                    <p className="text-sm text-[#8f97aa]">
+                    <p className="text-xs sm:text-sm text-[#8f97aa]">
                       {sectionDescriptions[activeSidebarItem] ??
                         sectionDescriptions.Dashboard}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <label className="flex h-11 min-w-[240px] items-center rounded-full border border-[#efebe7] bg-[#fcfcfc] px-4 text-sm text-[#9198aa] shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                  <label className="flex h-10 sm:h-11 w-full sm:w-auto sm:min-w-[240px] items-center rounded-full border border-[#efebe7] bg-[#fcfcfc] px-3 sm:px-4 text-xs sm:text-sm text-[#9198aa] shadow-sm">
                     <span className="mr-2">⌕</span>
                     <input
                       value={quickSearch}
@@ -594,8 +598,8 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
                     />
                   </label>
 
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-full bg-[linear-gradient(180deg,#eff1f8_0%,#ffffff_100%)] text-sm font-semibold text-[#4b5568] shadow-sm">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="grid h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11 place-items-center rounded-full bg-[linear-gradient(180deg,#eff1f8_0%,#ffffff_100%)] text-xs sm:text-sm font-semibold text-[#4b5568] shadow-sm">
                       {user.name
                         .split(" ")
                         .map((part) => part[0])
@@ -605,7 +609,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="rounded-full bg-[linear-gradient(180deg,#7178ff_0%,#5f68f8_100%)] px-4 py-2.5 text-sm font-medium text-white shadow-[0_10px_24px_rgba(95,104,248,0.28)] transition hover:brightness-105"
+                      className="rounded-full bg-[linear-gradient(180deg,#7178ff_0%,#5f68f8_100%)] px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white shadow-[0_10px_24px_rgba(95,104,248,0.28)] transition hover:brightness-105"
                     >
                       Logout
                     </button>
@@ -614,7 +618,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
               </div>
             </header>
 
-            <div className="mt-5">{scopedContent}</div>
+            <div className="mt-4 sm:mt-5">{scopedContent}</div>
           </section>
         </div>
       </div>

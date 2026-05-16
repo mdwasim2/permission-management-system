@@ -121,21 +121,21 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-4 py-6 sm:px-5 sm:py-8 md:px-7 md:py-10">
-      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[24rem] w-[24rem] -translate-x-1/2 rounded-full " />
-      <div className="pointer-events-none absolute " />
-      <div className="relative flex min-h-[calc(100vh-3rem)] flex-col sm:min-h-[calc(100vh-4rem)]">
-        <header className="flex items-start justify-start">
-          <Image src="/logo.png" alt="Obliq" width={104} height={40} />
+    <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
+      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[20rem] w-[20rem] -translate-x-1/2 rounded-full sm:h-[28rem] sm:w-[28rem] md:h-[36rem] md:w-[36rem]" />
+      <div className="pointer-events-none absolute inset-0" />
+      <div className="relative flex min-h-[calc(100vh-2rem)] flex-col sm:min-h-[calc(100vh-3rem)] md:min-h-[calc(100vh-4rem)]">
+        <header className="flex items-start justify-start px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4">
+          <Image src="/logo.png" alt="Obliq" width={104} height={40} priority />
         </header>
 
-        <div className="flex flex-1 items-center justify-center py-6 sm:py-10 md:py-16">
-          <section className="w-full max-w-[420px] rounded-2xl bg-white px-5 py-6 ring-0 sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A]">
+        <div className="flex flex-1 items-center justify-center px-2 py-6 sm:px-4 sm:py-8 md:py-12 lg:py-16">
+          <section className="w-full max-w-[420px] rounded-xl sm:rounded-2xl md:rounded-3xl bg-white px-4 py-5 sm:px-6 sm:py-7 md:px-8 md:py-9 lg:px-10 lg:py-10 ring-0 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A] transition-all duration-200">
             <div className="text-center">
-              <h1 className="font-onest font-semibold text-2xl leading-8 tracking-[-2%] text-[#202631] align-middle">
+              <h1 className="font-onest font-semibold text-xl leading-7 sm:text-2xl sm:leading-8 md:text-3xl md:leading-9 tracking-[-2%] text-[#202631] align-middle">
                 {mode === "login" ? "Login" : "Register"}
               </h1>
-              <p className="mt-0.5 font-inter font-normal text-[15px] leading-6 text-[#a0a8b8] align-middle sm:mt-2 sm:text-[15px] md:text-[15px]">
+              <p className="mt-1 sm:mt-2 md:mt-2.5 font-inter font-normal text-sm sm:text-[15px] md:text-base leading-5 sm:leading-6 md:leading-6 text-[#a0a8b8] align-middle">
                 {mode === "login"
                   ? "Enter your details to continue"
                   : "Create your account to continue"}
@@ -144,11 +144,11 @@ export function AuthForm({ mode }: AuthFormProps) {
 
             <form
               onSubmit={handleSubmit}
-              className="mt-6 space-y-3.5 sm:mt-10 sm:space-y-5"
+              className="mt-5 space-y-3 sm:mt-7 sm:space-y-4 md:mt-8 md:space-y-4.5"
             >
               {mode === "register" ? (
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2.5 sm:text-[0.9rem] md:text-[1.05rem]">
+                  <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2 sm:text-sm md:text-base">
                     Full name
                   </span>
                   <input
@@ -156,13 +156,13 @@ export function AuthForm({ mode }: AuthFormProps) {
                     onChange={(event) => setName(event.target.value)}
                     type="text"
                     placeholder="John Doe"
-                    className="h-10 w-full rounded-lg border border-[#e8ebf0] bg-white px-3 text-xs text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-3 focus:ring-[#ffe5da] sm:h-[3.45rem] sm:rounded-[1.05rem] sm:px-4 sm:text-[1rem] sm:focus:ring-4"
+                    className="h-9 sm:h-10 md:h-11 lg:h-12 w-full rounded-lg sm:rounded-[0.875rem] md:rounded-xl border border-[#e8ebf0] bg-white px-3 sm:px-4 text-xs sm:text-sm md:text-base text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-2 sm:focus:ring-3 focus:ring-[#ffe5da]"
                   />
                 </label>
               ) : null}
 
               <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2.5 sm:text-[0.9rem] md:text-[1.05rem]">
+                <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2 sm:text-sm md:text-base">
                   Email
                 </span>
                 <input
@@ -170,27 +170,27 @@ export function AuthForm({ mode }: AuthFormProps) {
                   onChange={(event) => setEmail(event.target.value)}
                   type="email"
                   placeholder="example@email.com"
-                  className="h-10 w-full rounded-lg border border-[#e8ebf0] bg-white px-3 text-xs text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-3 focus:ring-[#ffe5da] sm:h-[3.45rem] sm:rounded-[1.05rem] sm:px-4 sm:text-[1rem] sm:focus:ring-4"
+                  className="h-9 sm:h-10 md:h-11 lg:h-12 w-full rounded-lg sm:rounded-[0.875rem] md:rounded-xl border border-[#e8ebf0] bg-white px-3 sm:px-4 text-xs sm:text-sm md:text-base text-[#202631] outline-none transition placeholder:text-[#b1b8c4] focus:border-[#ff6b3d] focus:ring-2 sm:focus:ring-3 focus:ring-[#ffe5da]"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2.5 sm:text-[0.9rem] md:text-[1.05rem]">
+                <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2 sm:text-sm md:text-base">
                   Password
                 </span>
-                <div className="flex h-10 items-center rounded-lg border border-[#e8ebf0] bg-white pr-3 transition focus-within:border-[#ff6b3d] focus-within:ring-3 focus-within:ring-[#ffe5da] sm:h-[3.45rem] sm:rounded-[1.05rem] sm:pr-4 sm:focus-within:ring-4">
+                <div className="flex h-9 sm:h-10 md:h-11 lg:h-12 items-center rounded-lg sm:rounded-[0.875rem] md:rounded-xl border border-[#e8ebf0] bg-white pr-3 sm:pr-4 transition focus-within:border-[#ff6b3d] focus-within:ring-2 sm:focus-within:ring-3 focus-within:ring-[#ffe5da]">
                   <input
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="h-full flex-1 rounded-lg bg-transparent px-3 text-xs text-[#202631] outline-none placeholder:text-[#b1b8c4] sm:rounded-[1.05rem] sm:px-4 sm:text-[1rem]"
+                    className="h-full flex-1 rounded-lg bg-transparent px-3 sm:px-4 text-xs sm:text-sm md:text-base text-[#202631] outline-none placeholder:text-[#b1b8c4]"
                   />
                   <button
                     type="button"
                     aria-label="Toggle password visibility"
                     onClick={() => setShowPassword((current) => !current)}
-                    className="text-[#d0d5dd] transition hover:text-[#9ca4b3]"
+                    className="flex-shrink-0 text-[#d0d5dd] transition hover:text-[#9ca4b3] p-1"
                   >
                     <EyeIcon />
                   </button>
@@ -198,7 +198,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               </label>
 
               {mode === "login" ? (
-                <div className="flex flex-col gap-2.5 text-[0.8rem] text-[#7f8796] sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:text-[0.98rem]">
+                <div className="flex flex-col gap-2 text-xs text-[#7f8796] sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:text-sm md:text-base md:gap-4">
                   <Checkbox
                     checked={rememberMe}
                     onChange={setRememberMe}
@@ -212,7 +212,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                   </button>
                 </div>
               ) : (
-                <p className="text-[0.8rem] text-[#7f8796] sm:text-[0.98rem]">
+                <p className="text-xs text-[#7f8796] sm:text-sm md:text-base">
                   New accounts are created with the{" "}
                   <span className="font-medium text-[#414d61]">Customer</span>{" "}
                   role.
@@ -220,13 +220,13 @@ export function AuthForm({ mode }: AuthFormProps) {
               )}
 
               {errorMessage ? (
-                <p className="rounded-lg bg-[#fff0ea] px-3 py-2.5 text-xs text-[#c94f2d] sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
+                <p className="rounded-lg sm:rounded-xl md:rounded-2xl bg-[#fff0ea] px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-3.5 text-xs sm:text-sm md:text-base text-[#c94f2d]">
                   {errorMessage}
                 </p>
               ) : null}
 
               {successData ? (
-                <div className="rounded-lg bg-[#eefaf2] px-3 py-2.5 text-xs text-[#22543d] sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
+                <div className="rounded-lg sm:rounded-xl md:rounded-2xl bg-[#eefaf2] px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-3.5 text-xs sm:text-sm md:text-base text-[#22543d]">
                   <p className="font-semibold">{successData.message}</p>
                   <p className="mt-0.5 sm:mt-1">
                     Signed in as {successData.user.name} (
@@ -238,7 +238,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group mt-2 h-10 w-full transform-gpu rounded-lg border-2 border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-xs font-medium text-white shadow-[0_8px_16px_rgba(255,109,64,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-none hover:bg-white hover:text-[#f26639] hover:shadow-[0_10px_22px_rgba(255,109,64,0.2)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:mt-3 sm:h-[3.45rem] sm:rounded-[1rem] sm:text-[1.02rem] sm:shadow-[0_10px_28px_rgba(255,109,64,0.32)]"
+                className="group mt-4 sm:mt-5 md:mt-6 h-9 sm:h-10 md:h-11 lg:h-12 w-full transform-gpu rounded-lg sm:rounded-[0.875rem] md:rounded-xl border-2 border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-xs sm:text-sm md:text-base font-semibold text-white shadow-[0_8px_16px_rgba(255,109,64,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-none hover:bg-white hover:text-[#f26639] hover:shadow-[0_10px_22px_rgba(255,109,64,0.2)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
               >
                 <span className="inline-flex items-center justify-center gap-1.5">
                   <span>{isSubmitting ? "Please wait..." : submitLabel}</span>
@@ -268,7 +268,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-[0.8rem] text-[#7f8796] sm:mt-10 sm:text-[0.95rem]">
+            <p className="mt-5 text-center text-xs text-[#7f8796] sm:mt-8 sm:text-sm md:mt-10 md:text-base">
               {mode === "login"
                 ? "Don't have an account? "
                 : "Already have an account? "}
