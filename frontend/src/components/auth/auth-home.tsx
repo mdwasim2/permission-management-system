@@ -336,7 +336,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
 
     switch (activeSidebarItem) {
       case "Users":
-        return <UsersPanel apiBaseUrl={apiBaseUrl} enabled />;
+        return <UsersPanel apiBaseUrl="/api" enabled />;
       case "Audit Log":
         return <AuditLogPanel apiBaseUrl={apiBaseUrl} enabled />;
       case "Tasks":
