@@ -338,7 +338,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
       case "Users":
         return <UsersPanel apiBaseUrl="/api" enabled />;
       case "Audit Log":
-        return <AuditLogPanel apiBaseUrl={apiBaseUrl} enabled />;
+        return <AuditLogPanel apiBaseUrl="/api" enabled />;
       case "Tasks":
         return (
           <PanelShell title="Tasks" description="Task list in current scope.">

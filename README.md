@@ -150,9 +150,9 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/api
 
 ### Access the App
 
-- **Frontend**: http://localhost:3000
-- **Login**: demo@example.com / password123 (seeded on first migration)
-- **Backend API**: http://localhost:3001/api
+- **Frontend**: https://permission-management-system-eta.vercel.app/
+- **Login**: wasimmahamodraza@gmail.com / 123456
+- **Backend API**: https://permission-management-system-b46o.onrender.com/api
 
 ---
 
