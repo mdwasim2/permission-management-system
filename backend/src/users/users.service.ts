@@ -21,7 +21,6 @@ const roleRank: Record<RoleKey, number> = {
   [RoleKey.CUSTOMER]: 1,
 };
 const managerManagedRoleKeys: RoleKey[] = [RoleKey.AGENT, RoleKey.CUSTOMER];
-const customerAllowedPermissions = new Set<string>(['customer-portal.view']);
 
 @Injectable()
 export class UsersService {
@@ -82,7 +81,6 @@ export class UsersService {
     this.ensureRoleAssignableByActor(actor.role.key, createUserDto.roleKey);
     this.ensureRoleWithinCeiling(actor.role.key, createUserDto.roleKey);
     this.ensureGrantCeiling(actor.permissions, createUserDto.permissions ?? []);
-    this.ensureRolePermissionPolicy(createUserDto.roleKey, createUserDto.permissions ?? []);
     await this.ensurePermissionCatalog();
 
     const existingUser = await this.prisma.user.findUnique({
@@ -259,11 +257,6 @@ export class UsersService {
     if (actor.role.key === RoleKey.MANAGER && targetUser.role.key !== RoleKey.AGENT) {
       throw new ForbiddenException('Managers can only set permissions for agents');
     }
-
-    this.ensureRolePermissionPolicy(
-      targetUser.role.key,
-      setUserPermissionsDto.permissions.map((permission) => permission.permissionKey),
-    );
     this.ensureGrantCeiling(
       actor.permissions,
       setUserPermissionsDto.permissions.map((permission) => permission.permissionKey),
@@ -372,20 +365,6 @@ export class UsersService {
   private ensureRoleAssignableByActor(actorRoleKey: RoleKey, nextRoleKey: RoleKey) {
     if (actorRoleKey === RoleKey.MANAGER && !managerManagedRoleKeys.includes(nextRoleKey)) {
       throw new ForbiddenException('Managers can only create or assign AGENT and CUSTOMER roles');
-    }
-  }
-
-  private ensureRolePermissionPolicy(roleKey: RoleKey, permissions: string[]) {
-    if (roleKey !== RoleKey.CUSTOMER) {
-      return;
-    }
-
-    const invalidPermission = permissions.find(
-      (permission) => !customerAllowedPermissions.has(permission),
-    );
-
-    if (invalidPermission) {
-      throw new ForbiddenException('Customers can only be granted customer portal permissions');
     }
   }
 

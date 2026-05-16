@@ -5,28 +5,6 @@ import { UsersPanel } from "@/components/dashboard/users-panel";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 
-const defaultSidebarGroups = [
-  {
-    title: "Workspace",
-    items: [
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "Users", href: "/users" },
-      { label: "Leads", href: "/leads" },
-      { label: "Tasks", href: "/tasks" },
-      { label: "Reports", href: "/reports" },
-      { label: "Audit Log", href: "/audit-log" },
-    ],
-  },
-  {
-    title: "Users",
-    items: [{ label: "Customer Portal", href: "/customer-portal" }],
-  },
-  {
-    title: "Other",
-    items: [{ label: "Settings", href: "/settings" }],
-  },
-] as const;
-
 const sectionDescriptions: Record<string, string> = {
   Dashboard: "Protected overview.",
   Users: "User lifecycle and access control.",
@@ -309,7 +287,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
 
   const navigationGroups = useMemo(() => {
     if (!user?.navigation?.length) {
-      return defaultSidebarGroups;
+      return [] as Array<{ title: string; items: NavigationEntry[] }>;
     }
 
     return user.navigation.reduce<
@@ -544,36 +522,42 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
             </div>
 
             <div className="mt-6 space-y-6">
-              {navigationGroups.map((group) => (
-                <div key={group.title}>
-                  <p className="mb-3 px-2 text-xs font-medium uppercase tracking-[0.2em] text-[#b1917e]">
-                    {group.title}
-                  </p>
-                  <div className="space-y-1.5">
-                    {group.items.map((item) => {
-                      const isActive = item.label === activeSidebarItem;
+              {navigationGroups.length ? (
+                navigationGroups.map((group) => (
+                  <div key={group.title}>
+                    <p className="mb-3 px-2 text-xs font-medium uppercase tracking-[0.2em] text-[#b1917e]">
+                      {group.title}
+                    </p>
+                    <div className="space-y-1.5">
+                      {group.items.map((item) => {
+                        const isActive = item.label === activeSidebarItem;
 
-                      return (
-                        <button
-                          key={item.href}
-                          type="button"
-                          onClick={() => {
-                            setActiveSidebarItem(item.label);
-                            router.push(item.href);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-2xl px-3 py-2.5 text-left text-sm transition ${
-                            isActive
-                              ? "bg-[#e9d5c3]/65 font-medium text-[#4f5567]"
-                              : "text-[#6b7184] hover:bg-white/60"
-                          }`}
-                        >
-                          <span>{item.label}</span>
-                        </button>
-                      );
-                    })}
+                        return (
+                          <button
+                            key={item.href}
+                            type="button"
+                            onClick={() => {
+                              setActiveSidebarItem(item.label);
+                              router.push(item.href);
+                            }}
+                            className={`flex w-full items-center justify-between rounded-2xl px-3 py-2.5 text-left text-sm transition ${
+                              isActive
+                                ? "bg-[#e9d5c3]/65 font-medium text-[#4f5567]"
+                                : "text-[#6b7184] hover:bg-white/60"
+                            }`}
+                          >
+                            <span>{item.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="rounded-2xl border border-dashed border-[#e4d4c6] bg-white/45 px-3 py-3 text-sm text-[#8b93a6]">
+                  No modules are assigned to your account yet.
+                </p>
+              )}
             </div>
           </aside>
 

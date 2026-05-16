@@ -4,12 +4,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RoleKey, UserStatus } from '@prisma/client';
+import { Prisma, RoleKey, UserStatus } from '@prisma/client';
 import { hash, compare } from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
-import { permissionCatalog } from '../permissions/permission-catalog';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -19,28 +18,6 @@ const ACCESS_TOKEN_TTL_SECONDS = 60 * 15;
 const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOGIN_BLOCK_WINDOW_MS = 15 * 60 * 1000;
-
-const rolePermissionDefaults: Record<RoleKey, string[]> = {
-  [RoleKey.ADMIN]: Object.values(permissionCatalog).flat(),
-  [RoleKey.MANAGER]: [
-    ...permissionCatalog.dashboard,
-    ...permissionCatalog.users,
-    ...permissionCatalog.leads,
-    ...permissionCatalog.tasks,
-    ...permissionCatalog.reports,
-    ...permissionCatalog.audit,
-    ...permissionCatalog.customerPortal,
-  ],
-  [RoleKey.AGENT]: [
-    ...permissionCatalog.dashboard,
-    ...permissionCatalog.leads,
-    ...permissionCatalog.tasks,
-    ...permissionCatalog.customerPortal,
-  ],
-  [RoleKey.CUSTOMER]: [
-    ...permissionCatalog.customerPortal,
-  ],
-};
 
 const navigationItems = [
   { label: 'Dashboard', href: '/dashboard', permission: 'dashboard.view', group: 'Workspace' },
@@ -99,6 +76,17 @@ export class AuthService {
       },
     });
 
+    await this.writeAuditLog({
+      actorId: user.id,
+      action: 'auth.register',
+      targetType: 'user',
+      targetId: user.id,
+      targetUserId: user.id,
+      metadata: {
+        roleKey: user.role.key,
+      },
+    });
+
     return this.createSession(user, response, 'Account created successfully');
   }
 
@@ -131,6 +119,14 @@ export class AuthService {
     await this.prisma.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
+    });
+
+    await this.writeAuditLog({
+      actorId: user.id,
+      action: 'auth.login',
+      targetType: 'user',
+      targetId: user.id,
+      targetUserId: user.id,
     });
 
     this.clearFailedLogins(loginDto.email);
@@ -178,6 +174,14 @@ export class AuthService {
       this.blacklistAccessToken(currentAccessToken);
     }
 
+    await this.writeAuditLog({
+      actorId: storedToken.user.id,
+      action: 'auth.refresh',
+      targetType: 'user',
+      targetId: storedToken.user.id,
+      targetUserId: storedToken.user.id,
+    });
+
     return this.createSession(
       storedToken.user,
       response,
@@ -186,6 +190,7 @@ export class AuthService {
   }
 
   async logout(request: Request, response: Response) {
+    const actor = await this.getSessionUser(request);
     const refreshToken = request.cookies?.[REFRESH_TOKEN_COOKIE];
     const accessToken = this.extractAccessToken(request);
 
@@ -200,6 +205,14 @@ export class AuthService {
     }
 
     this.clearSessionCookies(response);
+
+    await this.writeAuditLog({
+      actorId: actor.id,
+      action: 'auth.logout',
+      targetType: 'user',
+      targetId: actor.id,
+      targetUserId: actor.id,
+    });
 
     return {
       message: 'Logged out successfully',
@@ -438,13 +451,15 @@ export class AuthService {
   }
 
   private async resolvePermissions(userId: string, roleKey: RoleKey) {
-    if (roleKey === RoleKey.ADMIN) {
-      return [...new Set(Object.values(permissionCatalog).flat())].sort((left, right) =>
-        left.localeCompare(right),
-      );
-    }
-
-    const basePermissions = new Set(rolePermissionDefaults[roleKey] ?? []);
+    const rolePermissions = await this.prisma.rolePermission.findMany({
+      where: { role: { key: roleKey } },
+      include: {
+        permission: true,
+      },
+    });
+    const basePermissions = new Set(
+      rolePermissions.map((entry) => entry.permission.key),
+    );
     const overrides = await this.prisma.userPermission.findMany({
       where: { userId },
       include: { permission: true },
@@ -474,5 +489,25 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Refresh token is invalid');
     }
+  }
+
+  private async writeAuditLog(input: {
+    actorId: string;
+    action: string;
+    targetType: string;
+    targetId: string;
+    targetUserId?: string;
+    metadata?: Prisma.InputJsonValue;
+  }) {
+    await this.prisma.auditLog.create({
+      data: {
+        actorId: input.actorId,
+        action: input.action,
+        targetType: input.targetType,
+        targetId: input.targetId,
+        targetUserId: input.targetUserId,
+        metadata: input.metadata,
+      },
+    });
   }
 }

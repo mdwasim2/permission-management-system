@@ -6,7 +6,7 @@ export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
   @Get('catalog')
-  getCatalog() {
+  async getCatalog() {
     return this.permissionsService.getCatalog();
   }
 }

@@ -30,27 +30,37 @@ export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value;
   const hasRefreshToken = Boolean(request.cookies.get("refresh_token")?.value);
   const hasAccessToken = Boolean(accessToken);
-
-  // Allow either token to pass the first gate; the home page can then restore the session if needed.
   const hasSession = hasAccessToken || hasRefreshToken;
   const requiredPermission =
     routePermissions[pathname as keyof typeof routePermissions];
 
+  // Allow forbidden page to be accessible to everyone
+  if (pathname === "/forbidden") {
+    return NextResponse.next();
+  }
+
+  // Permission check for protected routes
   if (requiredPermission && accessToken) {
     const payload = decodePayload(accessToken);
     const permissions = payload?.permissions ?? [];
 
     if (!permissions.includes(requiredPermission) && !hasRefreshToken) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/forbidden", request.url));
     }
   }
 
+  if (requiredPermission && !accessToken && hasRefreshToken) {
+    return NextResponse.redirect(new URL("/forbidden", request.url));
+  }
+
+  // Protected routes require session
   if (protectedRoutes.includes(pathname) && !hasSession) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (authRoutes.includes(pathname) && hasSession) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // Auth routes are always accessible (allow user to switch account)
+  if (authRoutes.some((route) => route === pathname)) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();
@@ -67,6 +77,7 @@ export const config = {
     "/audit-log",
     "/customer-portal",
     "/settings",
+    "/forbidden",
     "/login",
     "/register",
   ],
