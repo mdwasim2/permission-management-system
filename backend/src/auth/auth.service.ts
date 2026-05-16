@@ -38,7 +38,6 @@ const rolePermissionDefaults: Record<RoleKey, string[]> = {
     ...permissionCatalog.customerPortal,
   ],
   [RoleKey.CUSTOMER]: [
-    ...permissionCatalog.dashboard,
     ...permissionCatalog.customerPortal,
   ],
 };

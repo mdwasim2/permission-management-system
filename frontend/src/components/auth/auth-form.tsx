@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
+import { Checkbox } from "../common/checkbox";
 
 const EyeIcon = () => (
   <svg
@@ -194,15 +195,11 @@ export function AuthForm({ mode }: AuthFormProps) {
 
               {mode === "login" ? (
                 <div className="flex flex-col gap-3 text-[0.98rem] text-[#7f8796] sm:flex-row sm:items-center sm:justify-between">
-                  <label className="inline-flex items-center gap-2.5">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(event) => setRememberMe(event.target.checked)}
-                      className="h-4 w-4 rounded-[0.35rem] border border-[#dde2ea] text-[#ff6b3d] accent-[#ff6b3d]"
-                    />
-                    <span>Remember me</span>
-                  </label>
+                  <Checkbox
+                    checked={rememberMe}
+                    onChange={setRememberMe}
+                    label="Remember me"
+                  />
                   <button
                     type="button"
                     className="text-left font-medium text-[#ff6b3d] transition hover:text-[#f15c2f] sm:text-right"

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Checkbox } from "../common/checkbox";
 
 type UserRecord = {
   id: string;
@@ -18,6 +19,7 @@ type UserRecord = {
 };
 
 type UsersResponse = {
+  assignableRoles?: string[];
   users: UserRecord[];
   grantablePermissions: string[];
 };
@@ -35,6 +37,7 @@ export function UsersPanel({ apiBaseUrl, enabled }: UsersPanelProps) {
   const [grantablePermissions, setGrantablePermissions] = useState<string[]>(
     [],
   );
+  const [assignableRoles, setAssignableRoles] = useState<string[]>(roleOptions);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -117,6 +120,7 @@ export function UsersPanel({ apiBaseUrl, enabled }: UsersPanelProps) {
       const data = (await response.json()) as UsersResponse;
       setUsers(data.users);
       setGrantablePermissions(data.grantablePermissions);
+      setAssignableRoles(data.assignableRoles ?? roleOptions);
       const nextSelectedUserId = data.users[0]?.id || "";
       const nextSelectedUser =
         data.users.find((user) => user.id === nextSelectedUserId) ?? null;
@@ -151,6 +155,7 @@ export function UsersPanel({ apiBaseUrl, enabled }: UsersPanelProps) {
     const data = (await response.json()) as UsersResponse;
     setUsers(data.users);
     setGrantablePermissions(data.grantablePermissions);
+    setAssignableRoles(data.assignableRoles ?? roleOptions);
     selectUser(
       nextSelectedUserId ?? data.users[0]?.id ?? "",
       data.users,
@@ -565,7 +570,7 @@ export function UsersPanel({ apiBaseUrl, enabled }: UsersPanelProps) {
               }
               className="h-11 w-full rounded-2xl border border-[#ece7e2] bg-[#fffdfa] px-4 text-sm outline-none"
             >
-              {roleOptions.map((role) => (
+              {assignableRoles.map((role) => (
                 <option key={role} value={role}>
                   {role}
                 </option>
@@ -649,7 +654,7 @@ export function UsersPanel({ apiBaseUrl, enabled }: UsersPanelProps) {
               }
               className="h-11 w-full rounded-2xl border border-[#ece7e2] bg-[#fffdfa] px-4 text-sm outline-none"
             >
-              {roleOptions.map((role) => (
+              {assignableRoles.map((role) => (
                 <option key={role} value={role}>
                   {role}
                 </option>
@@ -700,16 +705,14 @@ export function UsersPanel({ apiBaseUrl, enabled }: UsersPanelProps) {
                   className="flex items-center justify-between rounded-2xl border border-[#efe8e1] bg-[#fffdfa] px-4 py-3 text-sm text-[#525a6e]"
                 >
                   <span>{permission}</span>
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={Boolean(draftPermissions[permission])}
-                    onChange={(event) =>
+                    onChange={(checked) =>
                       setDraftPermissions((current) => ({
                         ...current,
-                        [permission]: event.target.checked,
+                        [permission]: checked,
                       }))
                     }
-                    className="h-4 w-4 accent-[#646fe5]"
                   />
                 </label>
               ))

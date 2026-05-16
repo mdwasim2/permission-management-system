@@ -20,6 +20,8 @@ const roleRank: Record<RoleKey, number> = {
   [RoleKey.AGENT]: 2,
   [RoleKey.CUSTOMER]: 1,
 };
+const managerManagedRoleKeys: RoleKey[] = [RoleKey.AGENT, RoleKey.CUSTOMER];
+const customerAllowedPermissions = new Set<string>(['customer-portal.view']);
 
 @Injectable()
 export class UsersService {
@@ -30,7 +32,15 @@ export class UsersService {
 
   async getUsers(request: Request) {
     const actor = await this.requirePermission(request, 'users.view');
+    const where: Prisma.UserWhereInput =
+      actor.role.key === RoleKey.MANAGER
+        ? {
+            OR: [{ id: actor.id }, { managerId: actor.id }],
+          }
+        : {};
+
     const users = await this.prisma.user.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       include: {
         role: true,
@@ -48,6 +58,7 @@ export class UsersService {
         role: actor.role,
         permissions: actor.permissions,
       },
+      assignableRoles: this.getAssignableRoles(actor.role.key),
       users: users.map((user) => ({
         id: user.id,
         name: user.name,
@@ -68,8 +79,10 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto, request: Request) {
     const actor = await this.requirePermission(request, 'users.create');
+    this.ensureRoleAssignableByActor(actor.role.key, createUserDto.roleKey);
     this.ensureRoleWithinCeiling(actor.role.key, createUserDto.roleKey);
     this.ensureGrantCeiling(actor.permissions, createUserDto.permissions ?? []);
+    this.ensureRolePermissionPolicy(createUserDto.roleKey, createUserDto.permissions ?? []);
     await this.ensurePermissionCatalog();
 
     const existingUser = await this.prisma.user.findUnique({
@@ -91,6 +104,7 @@ export class UsersService {
         email: createUserDto.email.toLowerCase(),
         passwordHash: await hash(createUserDto.password, 10),
         roleId: role.id,
+        managerId: actor.role.key === RoleKey.MANAGER ? actor.id : null,
         directPermissions: {
           create: permissionRecords.map((permission) => ({
             permissionId: permission.id,
@@ -128,9 +142,10 @@ export class UsersService {
 
   async updateUser(userId: string, updateUserDto: UpdateUserDto, request: Request) {
     const actor = await this.requirePermission(request, 'users.edit');
-    const targetUser = await this.getManageableUser(userId, actor.role.key);
+    const targetUser = await this.getManageableUser(userId, actor);
 
     if (updateUserDto.roleKey) {
+      this.ensureRoleAssignableByActor(actor.role.key, updateUserDto.roleKey);
       this.ensureRoleWithinCeiling(actor.role.key, updateUserDto.roleKey);
     }
 
@@ -186,7 +201,7 @@ export class UsersService {
 
   async suspendUser(userId: string, request: Request) {
     const actor = await this.requirePermission(request, 'users.suspend');
-    await this.getManageableUser(userId, actor.role.key);
+    await this.getManageableUser(userId, actor);
 
     const user = await this.prisma.user.update({
       where: { id: userId },
@@ -211,7 +226,7 @@ export class UsersService {
 
   async banUser(userId: string, request: Request) {
     const actor = await this.requirePermission(request, 'users.ban');
-    await this.getManageableUser(userId, actor.role.key);
+    await this.getManageableUser(userId, actor);
 
     const user = await this.prisma.user.update({
       where: { id: userId },
@@ -240,7 +255,15 @@ export class UsersService {
     request: Request,
   ) {
     const actor = await this.requirePermission(request, 'users.edit');
-    await this.getManageableUser(userId, actor.role.key);
+    const targetUser = await this.getManageableUser(userId, actor);
+    if (actor.role.key === RoleKey.MANAGER && targetUser.role.key !== RoleKey.AGENT) {
+      throw new ForbiddenException('Managers can only set permissions for agents');
+    }
+
+    this.ensureRolePermissionPolicy(
+      targetUser.role.key,
+      setUserPermissionsDto.permissions.map((permission) => permission.permissionKey),
+    );
     this.ensureGrantCeiling(
       actor.permissions,
       setUserPermissionsDto.permissions.map((permission) => permission.permissionKey),
@@ -305,7 +328,10 @@ export class UsersService {
     return actor;
   }
 
-  private async getManageableUser(userId: string, actorRoleKey: RoleKey) {
+  private async getManageableUser(
+    userId: string,
+    actor: { id: string; role: { key: RoleKey } },
+  ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { role: true },
@@ -315,7 +341,22 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    if (roleRank[user.role.key] > roleRank[actorRoleKey]) {
+    if (actor.role.key === RoleKey.ADMIN) {
+      return user;
+    }
+
+    if (actor.id === user.id) {
+      throw new ForbiddenException('You cannot manage your own account from this endpoint');
+    }
+
+    if (
+      actor.role.key === RoleKey.MANAGER &&
+      (!user.managerId || user.managerId !== actor.id || !managerManagedRoleKeys.includes(user.role.key))
+    ) {
+      throw new ForbiddenException('Managers can only manage agents and customers in their own team');
+    }
+
+    if (roleRank[user.role.key] > roleRank[actor.role.key]) {
       throw new ForbiddenException('You cannot manage a user above your role ceiling');
     }
 
@@ -326,6 +367,38 @@ export class UsersService {
     if (roleRank[nextRoleKey] > roleRank[actorRoleKey]) {
       throw new ForbiddenException('You cannot grant a role above your own level');
     }
+  }
+
+  private ensureRoleAssignableByActor(actorRoleKey: RoleKey, nextRoleKey: RoleKey) {
+    if (actorRoleKey === RoleKey.MANAGER && !managerManagedRoleKeys.includes(nextRoleKey)) {
+      throw new ForbiddenException('Managers can only create or assign AGENT and CUSTOMER roles');
+    }
+  }
+
+  private ensureRolePermissionPolicy(roleKey: RoleKey, permissions: string[]) {
+    if (roleKey !== RoleKey.CUSTOMER) {
+      return;
+    }
+
+    const invalidPermission = permissions.find(
+      (permission) => !customerAllowedPermissions.has(permission),
+    );
+
+    if (invalidPermission) {
+      throw new ForbiddenException('Customers can only be granted customer portal permissions');
+    }
+  }
+
+  private getAssignableRoles(actorRoleKey: RoleKey) {
+    if (actorRoleKey === RoleKey.ADMIN) {
+      return Object.values(RoleKey);
+    }
+
+    if (actorRoleKey === RoleKey.MANAGER) {
+      return managerManagedRoleKeys;
+    }
+
+    return [];
   }
 
   private ensureGrantCeiling(actorPermissions: string[], permissions: string[]) {
