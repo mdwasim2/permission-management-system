@@ -218,6 +218,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
   const [errorMessage, setErrorMessage] = useState("");
   const [user, setUser] = useState<MeResponse["user"] | null>(null);
   const [activeSidebarItem, setActiveSidebarItem] = useState(initialSection);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [quickSearch, setQuickSearch] = useState("");
   const apiBaseUrl =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
@@ -264,6 +265,19 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
       setIsLoading(false);
     });
   }, [apiBaseUrl, router]);
+
+  useEffect(() => {
+    if (!isMobileSidebarOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileSidebarOpen]);
 
   useEffect(() => {
     if (!user?.navigation?.length) {
@@ -508,7 +522,31 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
       <div className="relative overflow-hidden rounded-[1rem] sm:rounded-[1.4rem] md:rounded-[2rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(255,250,246,0.88)_100%)] shadow-[0_24px_80px_rgba(222,196,176,0.34)]">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(252,186,159,0.25),rgba(255,255,255,0))]" />
         <div className="flex min-h-screen flex-col xl:flex-row">
-          <aside className="border-b border-[#f2e7dd] bg-[linear-gradient(180deg,#fde7dc_0%,#fff3e3_100%)] px-3 py-4 sm:px-4 sm:py-5 xl:min-h-screen xl:w-[250px] xl:border-b-0 xl:border-r">
+          {isMobileSidebarOpen ? (
+            <button
+              type="button"
+              aria-label="Close sidebar"
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="fixed inset-0 z-30 bg-[#202631]/35 backdrop-blur-[1px] xl:hidden"
+            />
+          ) : null}
+
+          <aside
+            className={`fixed inset-y-0 left-0 z-40 w-[82vw] max-w-[18.5rem] -translate-x-full overflow-y-auto border-r border-[#f2e7dd] bg-[linear-gradient(180deg,#fde7dc_0%,#fff3e3_100%)] px-3 py-4 transition-transform duration-300 ease-out sm:px-4 sm:py-5 xl:static xl:z-auto xl:w-[250px] xl:max-w-none xl:translate-x-0 xl:border-b-0 ${
+              isMobileSidebarOpen ? "translate-x-0" : ""
+            }`}
+          >
+            <div className="mb-3 flex items-center justify-end xl:hidden">
+              <button
+                type="button"
+                aria-label="Close navigation menu"
+                onClick={() => setIsMobileSidebarOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/60 bg-white/70 text-[#5a6073] shadow-sm"
+              >
+                ✕
+              </button>
+            </div>
+
             <div className="rounded-2xl border border-white/70 bg-white px-4 py-3 shadow-[0_16px_36px_rgba(226,190,160,0.22)]">
               <div className="flex items-center gap-3">
                 <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[linear-gradient(180deg,#6d75ff_0%,#5963f4_100%)] text-white shadow-[0_10px_24px_rgba(94,101,247,0.28)]">
@@ -542,6 +580,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
                             type="button"
                             onClick={() => {
                               setActiveSidebarItem(item.label);
+                              setIsMobileSidebarOpen(false);
                               router.push(item.href);
                             }}
                             className={`flex w-full items-center justify-between rounded-xl sm:rounded-2xl px-3 py-2 text-left text-xs sm:text-sm transition ${
@@ -569,6 +608,15 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
             <header className="rounded-[1rem] sm:rounded-[1.4rem] md:rounded-[1.8rem] border border-white/80 bg-white/80 px-3 py-3 sm:px-4 md:px-5 shadow-[0_10px_24px_rgba(236,231,226,0.8)] backdrop-blur">
               <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileSidebarOpen(true)}
+                    className="grid h-9 w-9 place-items-center rounded-full border border-[#ebe7e3] bg-white text-[#656b7b] shadow-sm xl:hidden"
+                    aria-label="Open navigation menu"
+                  >
+                    <span className="text-base">☰</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => router.back()}
