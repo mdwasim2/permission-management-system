@@ -321,8 +321,16 @@ cd frontend && npm run test       # Unit tests
 
 **Live Demo:**
 
-- Frontend: [Deployed URL]
-- Backend API Docs: [Swagger URL]
+- Frontend: https://permission-management-system-eta.vercel.app/
+- Backend API: https://permission-management-system-b46o.onrender.com/api
+
+---
+
+## 👨‍💻 Developer
+
+- Name: Md Wasim
+- GitHub: [github.com/mdwasim2](https://github.com/mdwasim2)
+- Website: [mdwasim.online](https://www.mdwasim.online/)
 
 ---
 
