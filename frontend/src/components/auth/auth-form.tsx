@@ -109,7 +109,20 @@ export function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
-      setSuccessData(result as AuthResult);
+      const authResult = result as AuthResult;
+      setSuccessData(authResult);
+
+      // Call local API route to set secure cookies
+      await fetch("/api/auth/callback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accessToken: authResult.accessToken,
+          refreshToken: authResult.refreshToken || undefined,
+        }),
+      });
 
       // A full navigation ensures the new auth cookies are visible to middleware immediately.
       window.location.assign("/");
