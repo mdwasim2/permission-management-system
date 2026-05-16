@@ -222,10 +222,9 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
   const [quickSearch, setQuickSearch] = useState("");
   const apiBaseUrl =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
-
   useEffect(() => {
     async function loadSession() {
-      const meResponse = await fetch(`${apiBaseUrl}/auth/me`, {
+      const meResponse = await fetch("/api/auth/me", {
         credentials: "include",
       });
 
@@ -236,35 +235,14 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
         return;
       }
 
-      const refreshResponse = await fetch(`${apiBaseUrl}/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!refreshResponse.ok) {
-        router.replace("/login");
-        return;
-      }
-
-      const refreshedMeResponse = await fetch(`${apiBaseUrl}/auth/me`, {
-        credentials: "include",
-      });
-
-      if (!refreshedMeResponse.ok) {
-        router.replace("/login");
-        return;
-      }
-
-      const data = (await refreshedMeResponse.json()) as MeResponse;
-      setUser(data.user);
-      setIsLoading(false);
+      router.replace("/login");
     }
 
     loadSession().catch(() => {
       setErrorMessage("Unable to restore your session");
       setIsLoading(false);
     });
-  }, [apiBaseUrl, router]);
+  }, [router]);
 
   useEffect(() => {
     if (!isMobileSidebarOpen) {
@@ -294,7 +272,7 @@ export function AuthHome({ initialSection = "Dashboard" }: AuthHomeProps) {
   }, [initialSection, router, user]);
 
   async function handleLogout() {
-    await fetch(`${apiBaseUrl}/auth/logout`, {
+    await fetch("/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });
