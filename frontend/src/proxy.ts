@@ -42,13 +42,9 @@ export function proxy(request: NextRequest) {
     const payload = decodePayload(accessToken);
     const permissions = payload?.permissions ?? [];
 
-    if (!permissions.includes(requiredPermission) && !hasRefreshToken) {
+    if (!permissions.includes(requiredPermission)) {
       return NextResponse.redirect(new URL("/forbidden", request.url));
     }
-  }
-
-  if (requiredPermission && !accessToken && hasRefreshToken) {
-    return NextResponse.redirect(new URL("/forbidden", request.url));
   }
 
   if (protectedRoutes.includes(pathname) && !hasSession) {
