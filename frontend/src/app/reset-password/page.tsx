@@ -18,9 +18,6 @@ export default function ResetPasswordPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const apiBaseUrl =
-    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage("");
@@ -44,7 +41,7 @@ export default function ResetPasswordPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/reset-password`, {
+      const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

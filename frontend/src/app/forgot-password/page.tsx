@@ -16,9 +16,6 @@ export default function ForgotPasswordPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [resetLink, setResetLink] = useState<string | null>(null);
 
-  const apiBaseUrl =
-    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
@@ -27,7 +24,7 @@ export default function ForgotPasswordPage() {
     setResetLink(null);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/forgot-password`, {
+      const response = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
