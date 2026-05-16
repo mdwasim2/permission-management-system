@@ -130,7 +130,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         </header>
 
         <div className="flex flex-1 items-center justify-center py-6 sm:py-10 md:py-16">
-          <section className="w-full max-w-sm rounded-2xl bg-white px-5 py-6 ring-0 sm:max-w-[27.25rem] sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A]">
+          <section className="w-full max-w-[420px] rounded-2xl bg-white px-5 py-6 ring-0 sm:rounded-[2rem] sm:px-6 sm:py-8 md:px-10 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A]">
             <div className="text-center">
               <h1 className="font-onest font-semibold text-2xl leading-8 tracking-[-2%] text-[#202631] align-middle">
                 {mode === "login" ? "Login" : "Register"}
