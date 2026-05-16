@@ -15,21 +15,12 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://permission-management-system-eta.vercel.app',
-    process.env.FRONTEND_URL,
-  ].filter(Boolean);
-
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('CORS not allowed'), false);
-      }
-    },
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://permission-management-system-eta.vercel.app',
+    ],
     credentials: true,
   });
 
