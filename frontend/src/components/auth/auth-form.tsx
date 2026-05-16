@@ -44,6 +44,7 @@ type AuthMode = "login" | "register";
 type AuthResult = {
   message: string;
   accessToken: string;
+  refreshToken?: string;
   user: {
     id: string;
     name: string;
