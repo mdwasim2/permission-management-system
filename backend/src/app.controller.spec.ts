@@ -14,9 +14,20 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('api info', () => {
+    it('should return API metadata', () => {
+      expect(appController.getApiInfo()).toMatchObject({
+        name: 'dynamic-rbac-api',
+        status: 'bootstrapped',
+      });
+    });
+  });
+
+  describe('health', () => {
+    it('should return healthy state', () => {
+      expect(appController.getHealth()).toMatchObject({
+        ok: true,
+      });
     });
   });
 });

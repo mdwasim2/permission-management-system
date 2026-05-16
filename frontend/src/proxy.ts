@@ -25,7 +25,7 @@ function decodePayload(token: string) {
   }
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get("access_token")?.value;
   const hasRefreshToken = Boolean(request.cookies.get("refresh_token")?.value);
@@ -34,12 +34,10 @@ export function middleware(request: NextRequest) {
   const requiredPermission =
     routePermissions[pathname as keyof typeof routePermissions];
 
-  // Allow forbidden page to be accessible to everyone
   if (pathname === "/forbidden") {
     return NextResponse.next();
   }
 
-  // Permission check for protected routes
   if (requiredPermission && accessToken) {
     const payload = decodePayload(accessToken);
     const permissions = payload?.permissions ?? [];
@@ -53,12 +51,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/forbidden", request.url));
   }
 
-  // Protected routes require session
   if (protectedRoutes.includes(pathname) && !hasSession) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Auth routes are always accessible (allow user to switch account)
   if (authRoutes.some((route) => route === pathname)) {
     return NextResponse.next();
   }

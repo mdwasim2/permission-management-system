@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { Checkbox } from "../common/checkbox";
+import Image from "next/image";
 
 const EyeIcon = () => (
   <svg
@@ -125,13 +126,13 @@ export function AuthForm({ mode }: AuthFormProps) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,146,104,0.08),_transparent_28%)]" />
       <div className="relative flex min-h-[calc(100vh-3rem)] flex-col sm:min-h-[calc(100vh-4rem)]">
         <header className="flex items-start justify-start">
-          <ObliqLogo />
+          <Image src="/logo.png" alt="Obliq" width={104} height={40} />
         </header>
 
         <div className="flex flex-1 items-center justify-center py-6 sm:py-10 md:py-16">
           <section className="w-full max-w-sm rounded-2xl border border-[#f6efea] bg-white px-5 py-6 shadow-[0_12px_24px_rgba(223,214,208,0.18),0_28px_56px_rgba(239,233,228,0.35)] ring-0 sm:max-w-[27.25rem] sm:rounded-[2rem] sm:px-6 sm:py-8 sm:ring-8 sm:ring-white/50 md:px-10 md:py-12">
             <div className="text-center">
-              <h1 className="text-xl font-semibold tracking-[-0.03em] text-[#202631] sm:text-[1.75rem] md:text-[2rem]">
+              <h1 className="font-onest font-semibold text-2xl leading-8 tracking-[-2%] text-[#202631] align-middle">
                 {mode === "login" ? "Login" : "Register"}
               </h1>
               <p className="mt-1.5 text-xs text-[#a0a8b8] sm:mt-2 sm:text-[0.95rem] md:text-[1.02rem]">
@@ -141,7 +142,10 @@ export function AuthForm({ mode }: AuthFormProps) {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-3.5 sm:mt-10 sm:space-y-5">
+            <form
+              onSubmit={handleSubmit}
+              className="mt-6 space-y-3.5 sm:mt-10 sm:space-y-5"
+            >
               {mode === "register" ? (
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-medium text-[#414d61] sm:mb-2.5 sm:text-[0.9rem] md:text-[1.05rem]">
@@ -234,14 +238,40 @@ export function AuthForm({ mode }: AuthFormProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-2 h-10 w-full rounded-lg border border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-xs font-medium text-white shadow-[0_8px_16px_rgba(255,109,64,0.24)] transition hover:brightness-[1.02] disabled:cursor-not-allowed disabled:opacity-70 sm:mt-3 sm:h-[3.45rem] sm:rounded-[1rem] sm:text-[1.02rem] sm:shadow-[0_10px_28px_rgba(255,109,64,0.32)]"
+                className="group mt-2 h-10 w-full transform-gpu rounded-lg border-2 border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-xs font-medium text-white shadow-[0_8px_16px_rgba(255,109,64,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-none hover:bg-white hover:text-[#f26639] hover:shadow-[0_10px_22px_rgba(255,109,64,0.2)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:mt-3 sm:h-[3.45rem] sm:rounded-[1rem] sm:text-[1.02rem] sm:shadow-[0_10px_28px_rgba(255,109,64,0.32)]"
               >
-                {isSubmitting ? "Please wait..." : submitLabel}
+                <span className="inline-flex items-center justify-center gap-1.5">
+                  <span>{isSubmitting ? "Please wait..." : submitLabel}</span>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12.3333 8H3.33325"
+                      stroke="#FD6D3F"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M8.66675 12C8.66675 12 12.6667 9.05407 12.6667 8C12.6667 6.94587 8.66675 4 8.66675 4"
+                      stroke="#FD6D3F"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
               </button>
             </form>
 
             <p className="mt-6 text-center text-[0.8rem] text-[#7f8796] sm:mt-10 sm:text-[0.95rem]">
-              {mode === "login" ? "Don't have an account? " : "Already have an account? "}
+              {mode === "login"
+                ? "Don't have an account? "
+                : "Already have an account? "}
               <Link
                 href={mode === "login" ? "/register" : "/login"}
                 className="font-semibold text-[#202631] transition hover:text-[#ff6b3d]"
