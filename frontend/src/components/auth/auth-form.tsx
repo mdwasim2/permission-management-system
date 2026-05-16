@@ -24,6 +24,21 @@ const EyeIcon = () => (
   </svg>
 );
 
+const ObliqLogo = () => (
+  <div className="flex items-center gap-2 sm:gap-3">
+    <div className="grid h-8 w-8 place-items-center rounded-lg bg-[linear-gradient(180deg,#ff9f72_0%,#ff6b3d_100%)] shadow-[0_8px_16px_rgba(255,107,61,0.24)] sm:h-10 sm:w-10 sm:rounded-xl sm:shadow-[0_12px_24px_rgba(255,107,61,0.28)]">
+      <div className="relative h-4 w-4 sm:h-5 sm:w-5">
+        <span className="absolute left-0 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-white/85 sm:h-3.5 sm:w-3.5" />
+        <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-white/55 sm:h-3.5 sm:w-3.5" />
+        <span className="absolute bottom-0 right-1 h-2 w-2 rounded-full bg-white sm:h-2.5 sm:w-2.5" />
+      </div>
+    </div>
+    <span className="text-lg font-bold tracking-[-0.04em] text-[#2d1d18] sm:text-2xl">
+      Obliq
+    </span>
+  </div>
+);
+
 type AuthMode = "login" | "register";
 
 type AuthResult = {
@@ -60,28 +75,6 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   const submitLabel = useMemo(
     () => (mode === "login" ? "Log in" : "Create account"),
-    [mode],
-  );
-
-  const panelContent = useMemo(
-    () =>
-      mode === "login"
-        ? {
-            eyebrow: "Permission Management",
-            title: "Secure access, clear control",
-            description:
-              "Monitor roles, keep audit trails visible, and manage permissions from one place.",
-            chartTitle: "Role Activity",
-            badge: "Live",
-          }
-        : {
-            eyebrow: "Team Onboarding",
-            title: "Create users with the right access",
-            description:
-              "Set up accounts fast, apply safe defaults, and keep permissions aligned with each role.",
-            chartTitle: "Access Setup",
-            badge: "Guided",
-          },
     [mode],
   );
 
@@ -128,26 +121,21 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f9f9f9] px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-      <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[1220px] flex-col rounded-[30px] bg-[#f9f9f9]">
-        <header className="px-2 py-3 sm:px-3 lg:px-4">
-          <Image
-            src="/logo.png"
-            alt="Obliq"
-            width={132}
-            height={48}
-            priority
-            style={{ width: "auto", height: "auto" }}
-          />
+    <main className="relative min-h-screen overflow-hidden bg-[#fffdfb] px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
+      <div className="pointer-events-none absolute left-1/2 top-[44%] h-[20rem] w-[20rem] -translate-x-1/2 rounded-full sm:h-[28rem] sm:w-[28rem] md:h-[36rem] md:w-[36rem]" />
+      <div className="pointer-events-none absolute inset-0" />
+      <div className="relative flex min-h-[calc(100vh-2rem)] flex-col sm:min-h-[calc(100vh-3rem)] md:min-h-[calc(100vh-4rem)]">
+        <header className="flex items-start justify-start px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4">
+          <Image src="/logo.png" alt="Obliq" width={104} height={40} priority />
         </header>
 
-        <div className="grid flex-1 items-center gap-6 lg:grid-cols-[420px_minmax(0,1fr)] lg:gap-10 xl:gap-14">
-          <section className="w-full max-w-[420px] justify-self-center rounded-[28px] bg-white px-5 py-7 sm:px-7 sm:py-8 lg:px-10 lg:py-9 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A]">
+        <div className="flex flex-1 items-center justify-center px-2 py-6 sm:px-4 sm:py-8 md:py-12 lg:py-16">
+          <section className="w-full max-w-[420px] rounded-xl sm:rounded-2xl md:rounded-3xl bg-white px-4 py-5 sm:px-6 sm:py-7 md:px-8 md:py-9 lg:px-10 lg:py-10 ring-0 [border:10px_solid_#00000005] shadow-[0_16px_34px_#C2C2C21A] transition-all duration-200">
             <div className="text-center">
-              <h1 className="font-onest text-[42px] font-semibold leading-[1.1] tracking-[-0.02em] text-[#202631] sm:text-[48px]">
+              <h1 className="font-onest font-semibold text-xl leading-7 sm:text-2xl sm:leading-8 md:text-3xl md:leading-9 tracking-[-2%] text-[#202631] align-middle">
                 {mode === "login" ? "Login" : "Register"}
               </h1>
-              <p className="mt-2 font-inter text-[15px] font-normal leading-6 text-[#a0a8b8]">
+              <p className="mt-1 sm:mt-2 md:mt-2.5 font-inter font-normal text-sm sm:text-[15px] md:text-base leading-5 sm:leading-6 md:leading-6 text-[#a0a8b8] align-middle">
                 {mode === "login"
                   ? "Enter your details to continue"
                   : "Create your account to continue"}
@@ -250,9 +238,33 @@ export function AuthForm({ mode }: AuthFormProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-4 h-12 w-full rounded-xl border-2 border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-base font-semibold text-white shadow-[0_8px_16px_rgba(255,109,64,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-none hover:bg-white hover:text-[#f26639] hover:shadow-[0_10px_22px_rgba(255,109,64,0.2)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
+                className="group mt-4 sm:mt-5 md:mt-6 h-9 sm:h-10 md:h-11 lg:h-12 w-full transform-gpu rounded-lg sm:rounded-[0.875rem] md:rounded-xl border-2 border-[#ff6c3e] bg-[linear-gradient(180deg,#ff7d51_0%,#ff6235_100%)] text-xs sm:text-sm md:text-base font-semibold text-white shadow-[0_8px_16px_rgba(255,109,64,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-none hover:bg-white hover:text-[#f26639] hover:shadow-[0_10px_22px_rgba(255,109,64,0.2)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
               >
-                {isSubmitting ? "Please wait..." : submitLabel}
+                <span className="inline-flex items-center justify-center gap-1.5">
+                  <span>{isSubmitting ? "Please wait..." : submitLabel}</span>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12.3333 8H3.33325"
+                      stroke="#FD6D3F"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8.66675 12C8.66675 12 12.6667 9.05407 12.6667 8C12.6667 6.94587 8.66675 4 8.66675 4"
+                      stroke="#FD6D3F"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
               </button>
             </form>
 
@@ -267,47 +279,6 @@ export function AuthForm({ mode }: AuthFormProps) {
                 {mode === "login" ? "Sign up" : "Log in"}
               </Link>
             </p>
-          </section>
-
-          <section className="relative hidden h-[640px] overflow-hidden rounded-[30px] border border-[#f2d4c8] bg-[linear-gradient(140deg,#ffe7db_0%,#ffbe96_48%,#ff8e58_100%)] p-8 lg:block">
-            <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[#ff7c45]/45 blur-3xl" />
-            <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-[#ffcfac]/60 blur-3xl" />
-
-            <div className="relative flex h-full flex-col justify-between">
-              <div className="max-w-[320px]">
-                <p className="font-onest text-sm font-medium uppercase tracking-[0.2em] text-[#7e2f12]">
-                  {panelContent.eyebrow}
-                </p>
-                <h2 className="mt-3 font-onest text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-[#2b1b14]">
-                  {panelContent.title}
-                </h2>
-                <p className="mt-4 font-inter text-[16px] leading-6 text-[#5e3a2b]">
-                  {panelContent.description}
-                </p>
-              </div>
-
-              <div className="relative ml-auto w-[82%] rounded-3xl bg-white/90 p-5 shadow-[0_22px_40px_rgba(114,46,16,0.18)] backdrop-blur">
-                <div className="mb-4 flex items-center justify-between">
-                  <p className="font-onest text-sm font-semibold text-[#3f2d24]">
-                    {panelContent.chartTitle}
-                  </p>
-                  <span className="rounded-full bg-[#fff1ea] px-3 py-1 text-xs font-medium text-[#ff6b3d]">
-                    {panelContent.badge}
-                  </span>
-                </div>
-                <div className="space-y-3">
-                  <div className="h-2.5 w-full rounded-full bg-[#f6e2d8]">
-                    <div className="h-full w-[84%] rounded-full bg-[#ff7a4d]" />
-                  </div>
-                  <div className="h-2.5 w-full rounded-full bg-[#f6e2d8]">
-                    <div className="h-full w-[66%] rounded-full bg-[#ff925f]" />
-                  </div>
-                  <div className="h-2.5 w-full rounded-full bg-[#f6e2d8]">
-                    <div className="h-full w-[48%] rounded-full bg-[#ffad83]" />
-                  </div>
-                </div>
-              </div>
-            </div>
           </section>
         </div>
       </div>
