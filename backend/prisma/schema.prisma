@@ -38,6 +38,7 @@ model User {
   manager            User?            @relation("ManagerTeam", fields: [managerId], references: [id])
   teamMembers        User[]           @relation("ManagerTeam")
   refreshTokens      RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
   directPermissions  UserPermission[]
   auditActions       AuditLog[]       @relation("AuditActor")
   createdAuditLogs   AuditLog[]       @relation("AuditTargetUser")
@@ -113,6 +114,21 @@ model RefreshToken {
   @@index([userId])
   @@index([expiresAt])
   @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id          String    @id @default(cuid())
+  userId      String
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([usedAt])
+  @@map("password_reset_tokens")
 }
 
 model AuditLog {

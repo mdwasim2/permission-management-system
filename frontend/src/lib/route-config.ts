@@ -11,4 +11,9 @@ export const routePermissions = {
 } as const;
 
 export const protectedRoutes = Object.keys(routePermissions);
-export const authRoutes = ["/login", "/register"] as const;
+export const authRoutes = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+] as const;

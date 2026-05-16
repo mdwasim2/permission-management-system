@@ -24,21 +24,6 @@ const EyeIcon = () => (
   </svg>
 );
 
-const ObliqLogo = () => (
-  <div className="flex items-center gap-2 sm:gap-3">
-    <div className="grid h-8 w-8 place-items-center rounded-lg bg-[linear-gradient(180deg,#ff9f72_0%,#ff6b3d_100%)] shadow-[0_8px_16px_rgba(255,107,61,0.24)] sm:h-10 sm:w-10 sm:rounded-xl sm:shadow-[0_12px_24px_rgba(255,107,61,0.28)]">
-      <div className="relative h-4 w-4 sm:h-5 sm:w-5">
-        <span className="absolute left-0 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-white/85 sm:h-3.5 sm:w-3.5" />
-        <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-white/55 sm:h-3.5 sm:w-3.5" />
-        <span className="absolute bottom-0 right-1 h-2 w-2 rounded-full bg-white sm:h-2.5 sm:w-2.5" />
-      </div>
-    </div>
-    <span className="text-lg font-bold tracking-[-0.04em] text-[#2d1d18] sm:text-2xl">
-      Obliq
-    </span>
-  </div>
-);
-
 type AuthMode = "login" | "register";
 
 type AuthResult = {
@@ -218,12 +203,12 @@ export function AuthForm({ mode }: AuthFormProps) {
                     onChange={setRememberMe}
                     label="Remember me"
                   />
-                  <button
-                    type="button"
+                  <Link
+                    href="/forgot-password"
                     className="text-left font-medium text-[#ff6b3d] transition hover:text-[#f15c2f] sm:text-right"
                   >
                     Forgot password?
-                  </button>
+                  </Link>
                 </div>
               ) : (
                 <p className="text-xs text-[#7f8796] sm:text-sm md:text-base">

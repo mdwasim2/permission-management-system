@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     return response;
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to set auth cookies" },
       { status: 500 },

@@ -72,5 +72,7 @@ export const config = {
     "/forbidden",
     "/login",
     "/register",
+    "/forgot-password",
+    "/reset-password",
   ],
 };

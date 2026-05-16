@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -9,25 +10,68 @@ import { hash, compare } from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 const ACCESS_TOKEN_COOKIE = 'access_token';
 const REFRESH_TOKEN_COOKIE = 'refresh_token';
 const ACCESS_TOKEN_TTL_SECONDS = 60 * 15;
 const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
+const PASSWORD_RESET_TOKEN_TTL_SECONDS = 60 * 30;
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOGIN_BLOCK_WINDOW_MS = 15 * 60 * 1000;
 
 const navigationItems = [
-  { label: 'Dashboard', href: '/dashboard', permission: 'dashboard.view', group: 'Workspace' },
-  { label: 'Users', href: '/users', permission: 'users.view', group: 'Workspace' },
-  { label: 'Leads', href: '/leads', permission: 'leads.view', group: 'Workspace' },
-  { label: 'Tasks', href: '/tasks', permission: 'tasks.view', group: 'Workspace' },
-  { label: 'Reports', href: '/reports', permission: 'reports.view', group: 'Workspace' },
-  { label: 'Audit Log', href: '/audit-log', permission: 'audit.view', group: 'Workspace' },
-  { label: 'Customer Portal', href: '/customer-portal', permission: 'customer-portal.view', group: 'Users' },
-  { label: 'Settings', href: '/settings', permission: 'settings.manage', group: 'Other' },
+  {
+    label: 'Dashboard',
+    href: '/dashboard',
+    permission: 'dashboard.view',
+    group: 'Workspace',
+  },
+  {
+    label: 'Users',
+    href: '/users',
+    permission: 'users.view',
+    group: 'Workspace',
+  },
+  {
+    label: 'Leads',
+    href: '/leads',
+    permission: 'leads.view',
+    group: 'Workspace',
+  },
+  {
+    label: 'Tasks',
+    href: '/tasks',
+    permission: 'tasks.view',
+    group: 'Workspace',
+  },
+  {
+    label: 'Reports',
+    href: '/reports',
+    permission: 'reports.view',
+    group: 'Workspace',
+  },
+  {
+    label: 'Audit Log',
+    href: '/audit-log',
+    permission: 'audit.view',
+    group: 'Workspace',
+  },
+  {
+    label: 'Customer Portal',
+    href: '/customer-portal',
+    permission: 'customer-portal.view',
+    group: 'Users',
+  },
+  {
+    label: 'Settings',
+    href: '/settings',
+    permission: 'settings.manage',
+    group: 'Other',
+  },
 ] as const;
 
 @Injectable()
@@ -235,6 +279,114 @@ export class AuthService {
     };
   }
 
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const genericMessage =
+      'If this email exists, password reset instructions have been generated';
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: forgotPasswordDto.email.toLowerCase() },
+    });
+
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      return { message: genericMessage };
+    }
+
+    const resetToken = randomBytes(32).toString('hex');
+    const tokenHash = this.hashToken(resetToken);
+
+    await this.prisma.passwordResetToken.deleteMany({
+      where: { userId: user.id },
+    });
+
+    await this.prisma.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt: new Date(
+          Date.now() + PASSWORD_RESET_TOKEN_TTL_SECONDS * 1000,
+        ),
+      },
+    });
+
+    await this.writeAuditLog({
+      actorId: user.id,
+      action: 'auth.password_reset.request',
+      targetType: 'user',
+      targetId: user.id,
+      targetUserId: user.id,
+    });
+
+    const payload: {
+      message: string;
+      resetToken?: string;
+      resetLink?: string;
+    } = { message: genericMessage };
+
+    if (process.env.NODE_ENV !== 'production') {
+      const frontendBaseUrl =
+        process.env.FRONTEND_URL ?? 'http://localhost:3000';
+
+      payload.resetToken = resetToken;
+      payload.resetLink = `${frontendBaseUrl}/reset-password?token=${resetToken}`;
+    }
+
+    return payload;
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const tokenHash = this.hashToken(resetPasswordDto.token);
+
+    const storedToken = await this.prisma.passwordResetToken.findFirst({
+      where: {
+        tokenHash,
+        usedAt: null,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!storedToken || storedToken.user.status !== UserStatus.ACTIVE) {
+      throw new BadRequestException('Reset token is invalid or expired');
+    }
+
+    const passwordHash = await hash(resetPasswordDto.newPassword, 10);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: storedToken.userId },
+        data: { passwordHash },
+      }),
+      this.prisma.passwordResetToken.updateMany({
+        where: {
+          userId: storedToken.userId,
+          usedAt: null,
+        },
+        data: {
+          usedAt: new Date(),
+        },
+      }),
+      this.prisma.refreshToken.deleteMany({
+        where: { userId: storedToken.userId },
+      }),
+    ]);
+
+    await this.writeAuditLog({
+      actorId: storedToken.userId,
+      action: 'auth.password_reset.complete',
+      targetType: 'user',
+      targetId: storedToken.userId,
+      targetUserId: storedToken.userId,
+    });
+
+    return {
+      message: 'Password has been reset successfully',
+    };
+  }
+
   async getSessionUser(request: Request) {
     const accessToken = this.extractAccessToken(request);
 
@@ -275,6 +427,8 @@ export class AuthService {
       endpoints: {
         register: 'POST /api/auth/register',
         login: 'POST /api/auth/login',
+        forgotPassword: 'POST /api/auth/forgot-password',
+        resetPassword: 'POST /api/auth/reset-password',
         refresh: 'POST /api/auth/refresh',
         logout: 'POST /api/auth/logout',
         me: 'GET /api/auth/me',
@@ -400,9 +554,7 @@ export class AuthService {
         email: string;
         role: RoleKey;
         permissions: string[];
-      }>(
-        token,
-      );
+      }>(token);
     } catch {
       throw new UnauthorizedException('Access token is invalid');
     }
@@ -412,7 +564,9 @@ export class AuthService {
     const state = this.failedLoginAttempts.get(email.toLowerCase());
 
     if (state?.blockedUntil && state.blockedUntil > Date.now()) {
-      throw new UnauthorizedException('Too many failed attempts. Try again later');
+      throw new UnauthorizedException(
+        'Too many failed attempts. Try again later',
+      );
     }
   }
 
@@ -424,7 +578,9 @@ export class AuthService {
     this.failedLoginAttempts.set(key, {
       count: nextCount,
       blockedUntil:
-        nextCount >= MAX_LOGIN_ATTEMPTS ? Date.now() + LOGIN_BLOCK_WINDOW_MS : undefined,
+        nextCount >= MAX_LOGIN_ATTEMPTS
+          ? Date.now() + LOGIN_BLOCK_WINDOW_MS
+          : undefined,
     });
   }
 
@@ -433,8 +589,12 @@ export class AuthService {
   }
 
   private blacklistAccessToken(token: string) {
-    const decodedToken = this.jwtService.decode(token) as { exp?: number } | null;
-    const expiresAt = decodedToken?.exp ? decodedToken.exp * 1000 : Date.now() + ACCESS_TOKEN_TTL_SECONDS * 1000;
+    const decodedToken = this.jwtService.decode(token) as {
+      exp?: number;
+    } | null;
+    const expiresAt = decodedToken?.exp
+      ? decodedToken.exp * 1000
+      : Date.now() + ACCESS_TOKEN_TTL_SECONDS * 1000;
 
     this.blacklistedAccessTokens.set(this.hashToken(token), expiresAt);
     this.pruneBlacklistedTokens();
@@ -443,7 +603,10 @@ export class AuthService {
   private pruneBlacklistedTokens() {
     const now = Date.now();
 
-    for (const [tokenHash, expiresAt] of this.blacklistedAccessTokens.entries()) {
+    for (const [
+      tokenHash,
+      expiresAt,
+    ] of this.blacklistedAccessTokens.entries()) {
       if (expiresAt <= now) {
         this.blacklistedAccessTokens.delete(tokenHash);
       }
@@ -474,11 +637,15 @@ export class AuthService {
       basePermissions.delete(override.permission.key);
     }
 
-    return [...basePermissions].sort((left, right) => left.localeCompare(right));
+    return [...basePermissions].sort((left, right) =>
+      left.localeCompare(right),
+    );
   }
 
   private buildNavigation(permissions: string[]) {
-    return navigationItems.filter((item) => permissions.includes(item.permission));
+    return navigationItems.filter((item) =>
+      permissions.includes(item.permission),
+    );
   }
 
   private verifyRefreshToken(token: string) {
